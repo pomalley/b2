@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="book-detail.html">
 
 <dom-module id="my-new-view">
   <!-- Defines the element's style and local DOM -->
@@ -14,6 +15,8 @@
 
     <h1>New view</h1>
     <paper-slider min="0" max="100" value="25"></paper-slider>
+    <book-detail title="The Very Hungry Caterpillar" authors="Eric Carle"></book-detail>
+    <book-detail title="Unauthored Book"></book-detail>
   </template>
   <!-- Creates the element's prototype and registers it -->
   <script>
