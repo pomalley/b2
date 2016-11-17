@@ -1,0 +1,37 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="book-detail">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+    </style>
+    <paper-card heading=[[title]]>
+      <template is="dom-if" if="[[authors.length]]">
+        <div class="card-content">By [[authors]]</div>
+      </template>
+      <div class="card-actions">
+        <paper-button raised>Some Action</paper-button>
+        <paper-button raised>Another</paper-button>
+      </div>
+    </paper-card>
+  </template>
+  <script>
+  Polymer({
+    is: 'book-detail',
+    properties: {
+      title: {
+        type: String,
+        value: "[book title]",
+      },
+      authors: {
+        type: String,
+        value: "",
+      }
+    }
+  });
+  </script>
+</dom-module>
