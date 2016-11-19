@@ -9,6 +9,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view1">
@@ -23,15 +30,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div class="card">
       <div class="circle">1</div>
-      <h1>View One</h1>
-      <p>Ut labores minimum atomorum pro. Laudem tibique ut has.
-      <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
+      <h1>Firebase test</h1>
+      <firebase-app 
+        name="b2"
+        auth-domain="polymer-test-149602.firebaseapp.com"
+        database-url="https://polymer-test-149602.firebaseio.com"
+        api-key="AIzaSyDbw2J3B7-HWLdFg_bcFbmKnKkkY28Jh5I">
+      </firebase-app>
+      <firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError" app-name="b2">
+      </firebase-auth>
+      <firebase-document
+        id="document"
+        app-name="b2"
+        log=true
+        data="{{data}}">
+      <div hidden$=[[user]]>
+      <paper-button on-tap="signIn" raised>Sign In</paper-button>
+      </div>
+      <div hidden=[[!user]]>
+        <paper-button on-tap="signOut" raised>Sign Out</paper-button>
+        Hello [[user.displayName]]. Your ID is [[user.uid]].
+        <paper-input label="text data" value="{{data.text}}"></paper-input>
+        <paper-button on-tap="saveData" raised>Save</paper-button>
+      </div>
+      <div>
+        The data: [[data]]
+      </div>
     </div>
   </template>
 
   <script>
     Polymer({
-      is: 'my-view1'
+      is: 'my-view1',
+      signIn: function() {
+        this.$.auth.signInWithPopup();
+         // .then(function(response) { alert("success!"); })
+         // .catch(function(error) { alert("unsuccess!"); });
+      },
+      signOut: function() {
+        this.$.auth.signOut();
+      },
+      dbPath: function() {
+        return '/users/' + this.user.uid;
+      },
+      saveData: function() {
+        this.$.document.save(this.dbPath())
+          .then(function(response) { console.log("saved to " + this.$.document.path + response); },
+            function(response) { console.log("promise rejected " + response); })
+          .catch(function(response) { console.log("failed to save" + response); });
+      }
     });
   </script>
 </dom-module>
