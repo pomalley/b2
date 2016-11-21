@@ -1,10 +1,11 @@
 <!--
 book-firebase element
 
-Handle the logic of firebase connections for the b2 app.
+Handles the logic of firebase connections for the b2 app.
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 
@@ -25,6 +26,15 @@ Handle the logic of firebase connections for the b2 app.
         app-name="[[appName]]"
         signed-in="{{signedIn}}">
     </firebase-auth>
+
+    <div hidden$="[[signedIn]]">
+      <paper-button on-tap="signIn" raised>Sign In</paper-button>
+    </div>
+    <div hidden$="[[!signedIn]]">
+      Hello, [[user.displayName]]
+      <paper-button on-tap="signOut" raised>Sign Out</paper-button>
+    </div>
+
   </template>
   <script>
     Polymer({
@@ -37,12 +47,24 @@ Handle the logic of firebase connections for the b2 app.
         user: {
           type: firebase.User,
           notify: true
-        }
+        },
         signedIn: {
           type: Boolean,
           notify: true
-          read
         }
+      },
+      signIn: function() {
+        var app = this;
+        this.$.auth.signInWithPopup()
+          .then(function(response) { app._pageChanged(app.page); });
+        // .then(function(response) { alert("success!"); })
+        // .catch(function(error) { alert("unsuccess!"); });
+      },
+      signOut: function() {
+        var app = this;
+        this.$.auth.signOut()
+          .then(function(response) { app.page = 'login'; })
+          .catch(function(response) { console.log("Error on sign out: " + response); app.page = 'login'; });
       }
     });
   </script>
