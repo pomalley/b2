@@ -12,6 +12,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
 
 <link rel="import" href="shared-styles.html">
 
@@ -25,19 +27,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
+    <app-route
+        route="{{route}}"
+        pattern="/:key"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+    <firebase-document
+        id="document"
+        app-name="b2"
+        data="{{data}}"
+        path="{{fullPath}}"
+        log
+    >
+    </firebase-document>
+
     <div class="card">
       <div class="circle">1</div>
       <h1>Firebase test</h1>
-      <firebase-document
-        id="document"
-        app-name="b2"
-        log
-        data="{{data}}">
-      </firebase-document>
       <div>
-        Hello [[user.displayName]]. Your ID is [[user.uid]].
         <paper-input label="text data" value="{{data.text}}"></paper-input>
-        <paper-button on-tap="saveData" raised>Save</paper-button>
+        <div hidden$="{{isNew}}">
+          <paper-button on-tap="saveData" raised>Save</paper-button>
+        </div>
+        <div hidden$="{{!isNew}}">path: {{fullPath}}</div>
       </div>
     </div>
   </template>
@@ -46,15 +59,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer({
       is: 'my-view1',
       properties: {
-        user: firebase.User
+        dbPath: {
+          type: String,
+          value: ""
+        },
+        fullPath: {
+          type: String,
+          computed: 'computeFullPath(dbPath, routeData.key)'
+        },
+        isNew: {
+          type: Boolean,
+          computed: 'computeIsNew(fullPath)'
+        },
+        route: String
       },
-      dbPath: function() {
-        return '/users/' + this.user.uid;
+      computeFullPath: function(path, key) {
+        if (path && key) {
+          return path + '/' + key;
+        }
+        return undefined;
+      },
+      computeIsNew: function(fullPath) {
+        return fullPath !== undefined;
+      },
+      ready: function() {
+        if (!this.routeData.key) {
+          // this is a hack to get the computed fullPath to fire
+          // it _should_ fire on anything !== undefined, but apparently it doesn't
+          this.routeData.key = "a";
+          this.notifyPath('routeData.key');
+          this.routeData.key = "";
+          this.notifyPath('routeData.key');
+        }
       },
       saveData: function() {
+        if (!this.$.document.isNew) {
+          return;
+        }
         var view1 = this;
-        this.$.document.save(this.dbPath())
-          .then(function(response) { console.log("saved to " + view1.$.document.path + response); },
+        this.$.document.save(this.dbPath)
+          .then(
+            function(response) {
+              view1.routeData.key = view1.$.document.ref.key;
+              view1.notifyPath('routeData.key');
+              console.log("saved to " + view1.$.document.path + " resp: " + response);
+
+            },
             function(response) { console.log("promise rejected " + response); })
           .catch(function(response) { console.log("failed to save" + response); });
       }
