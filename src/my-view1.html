@@ -31,7 +31,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <firebase-document
         id="document"
         app-name="b2"
-        log=true
+        log
         data="{{data}}">
       </firebase-document>
       <div>
@@ -45,12 +45,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     Polymer({
       is: 'my-view1',
+      properties: {
+        user: firebase.User
+      },
       dbPath: function() {
         return '/users/' + this.user.uid;
       },
       saveData: function() {
+        var view1 = this;
         this.$.document.save(this.dbPath())
-          .then(function(response) { console.log("saved to " + this.$.document.path + response); },
+          .then(function(response) { console.log("saved to " + view1.$.document.path + response); },
             function(response) { console.log("promise rejected " + response); })
           .catch(function(response) { console.log("failed to save" + response); });
       }

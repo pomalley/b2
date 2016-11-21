@@ -1,9 +1,15 @@
+<!--
+my-new-view element
+
+a page to display a list (of books) resulting from a query
+-->
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="book-detail.html">
 
 <dom-module id="my-new-view">
-  <!-- Defines the element's style and local DOM -->
+
   <template>
     <style>
       :host {
@@ -13,14 +19,30 @@
       }
     </style>
 
+    <firebase-query
+      id="query"
+      app-name="b2"
+      path="[[queryPath]]"
+      data="{{queryData}}"
+      log
+      >
+    </firebase-query>
+
     <h1>Book List</h1>
-    <book-detail title="The Very Hungry Caterpillar" authors="Eric Carle"></book-detail>
-    <book-detail title="Unauthored Book"></book-detail>
+    <template is="dom-repeat" items="{{queryData}}">
+      <div><a href="/view1">{{item.text}}</a></div>
+    </template>
+    <div>Path: [[queryPath]]</div>
+    
   </template>
-  <!-- Creates the element's prototype and registers it -->
+
   <script>
     Polymer({
-      is: 'my-new-view'
+      is: 'my-new-view',
+
+      properties: {
+        queryPath: String
+      }
     });
   </script>
 </dom-module>
