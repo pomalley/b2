@@ -39,7 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data="{{data}}"
         path="{{fullPath}}"
         log
-    >
+      >
     </firebase-document>
 
     <div class="card">
@@ -65,13 +65,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         fullPath: {
           type: String,
-          computed: 'computeFullPath(dbPath, routeData.key)'
+          computed: 'computeFullPath(dbPath, key)'
         },
         isNew: {
           type: Boolean,
           computed: 'computeIsNew(fullPath)'
         },
-        route: String
+        route: {
+          type: String,
+          observer: '_routeChanged'
+        },
+        key: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_keyChanged'
+        }
+      },
+      observers: [
+        '_routeKeyChanged(routeData.key)'
+      ],
+      _keyChanged: function(newKey) {
+        console.log("newKey: " + newKey);
+      },
+      _routeKeyChanged: function(newKey) {
+        console.log("routeKeyChanged: " + newKey);
+        this.key = newKey;
+      },
+      _routeChanged: function(newRoute) {
+        console.log("route changed prefix: " + newRoute.prefix + " path: " + newRoute.path);
+        this.set('routeData.key', newRoute.path);
       },
       computeFullPath: function(path, key) {
         if (path && key) {
@@ -82,14 +104,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       computeIsNew: function(fullPath) {
         return fullPath !== undefined;
       },
-      ready: function() {
+      attached: function() {
         if (!this.routeData.key) {
           // this is a hack to get the computed fullPath to fire
           // it _should_ fire on anything !== undefined, but apparently it doesn't
-          this.routeData.key = "a";
-          this.notifyPath('routeData.key');
-          this.routeData.key = "";
-          this.notifyPath('routeData.key');
+          this.set('routeData.key', "a");
+          this.set('routeData.key', "");
         }
       },
       saveData: function() {
@@ -100,10 +120,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.document.save(this.dbPath)
           .then(
             function(response) {
-              view1.routeData.key = view1.$.document.ref.key;
-              view1.notifyPath('routeData.key');
-              console.log("saved to " + view1.$.document.path + " resp: " + response);
-
+              view1.set('route.path', view1.$.document.ref.key);
             },
             function(response) { console.log("promise rejected " + response); })
           .catch(function(response) { console.log("failed to save" + response); });
