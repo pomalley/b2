@@ -11,8 +11,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="book-detail.html">
 
 
 <link rel="import" href="shared-styles.html">
@@ -37,22 +40,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         id="document"
         app-name="b2"
         data="{{data}}"
-        path="{{fullPath}}"
+        path="[[fullPath]]"
         log
       >
     </firebase-document>
-
     <div class="card">
-      <div class="circle">1</div>
-      <h1>Firebase test</h1>
+      <div class="circle">B</div>
+      <paper-toggle-button id="edit" checked="{{editing}}">Edit</paper-toggle-button>
       <div>
-        <paper-input label="text data" value="{{data.text}}"></paper-input>
-        <div hidden$="{{isNew}}">
+        <book-detail book="{{data}}" editing="[[editing]]" id="book_detail"></book-detail>
+        <div hidden$="[[!isNew]]">
           <paper-button on-tap="saveData" raised>Save</paper-button>
         </div>
-        <div hidden$="{{!isNew}}">path: {{fullPath}}</div>
+        <div hidden$="[[isNew]]">path: {{fullPath}}</div>
       </div>
     </div>
+    <!--key = [[key]]<br />-->
+    <!--isNew = [[isNew]]<br />-->
+    <!--editing = [[editing]]<br/>-->
   </template>
 
   <script>
@@ -63,54 +68,58 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: String,
           value: ""
         },
+        key: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_keyChanged'
+        },
         fullPath: {
           type: String,
-          computed: 'computeFullPath(dbPath, key)'
+          computed: '_computeFullPath(dbPath, key)'
         },
         isNew: {
           type: Boolean,
-          computed: 'computeIsNew(fullPath)'
+          computed: '_computeIsNew(key)'
         },
         route: {
           type: String,
           observer: '_routeChanged'
         },
-        key: {
-          type: String,
-          reflectToAttribute: true,
-          observer: '_keyChanged'
+        data: {
+          type: Object,
+          notify: true
         }
       },
       observers: [
-        '_routeKeyChanged(routeData.key)'
+        '_routeKeyChanged(routeData.key)',
       ],
       _keyChanged: function(newKey) {
-        console.log("newKey: " + newKey);
+        view1 = this;
+        console.log("new key: " + newKey);
+        if (newKey == "new") {
+          this.set("editing", true);
+          this.set("data", {});
+        } else {
+          this.set("editing", false);
+        }
       },
       _routeKeyChanged: function(newKey) {
-        console.log("routeKeyChanged: " + newKey);
-        this.key = newKey;
+        console.log("routeData.key: " + newKey);
+        this.key = newKey || "new";
       },
       _routeChanged: function(newRoute) {
-        console.log("route changed prefix: " + newRoute.prefix + " path: " + newRoute.path);
-        this.set('routeData.key', newRoute.path);
+        console.log("route changed: %o", newRoute);
       },
-      computeFullPath: function(path, key) {
-        if (path && key) {
+      _computeFullPath: function(path, key) {
+        console.log("computeFullPath: path='" + path + "' key='" + key + "'");
+        if (path && key && key != "new") {
+          console.log("returning real path");
           return path + '/' + key;
         }
         return undefined;
       },
-      computeIsNew: function(fullPath) {
-        return fullPath !== undefined;
-      },
-      attached: function() {
-        if (!this.routeData.key) {
-          // this is a hack to get the computed fullPath to fire
-          // it _should_ fire on anything !== undefined, but apparently it doesn't
-          this.set('routeData.key', "a");
-          this.set('routeData.key', "");
-        }
+      _computeIsNew: function(key) {
+        return key == "new";
       },
       saveData: function() {
         if (!this.$.document.isNew) {

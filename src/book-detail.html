@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 
 <dom-module id="book-detail">
   <template>
@@ -9,13 +10,18 @@
         display: inline-block;
       }
     </style>
-    <paper-card heading=[[title]]>
-      <template is="dom-if" if="[[authors.length]]">
-        <div class="card-content">By [[authors]]</div>
-      </template>
-      <div class="card-actions">
-        <paper-button raised>Some Action</paper-button>
-        <paper-button raised>Another</paper-button>
+    <paper-card>
+      <div hidden$="[[editing]]" class="card-content">
+        <div><strong>[[_formatTitle(book.title)]]</strong></div>
+        <div>[[_formatAuthors(book.authors)]]</div>
+        <div>[[_formatText(book.text)]]</div>
+      </div>
+      <div hidden$="[[!editing]]">
+        <div class="card-content">
+          <paper-input label="Title" value="{{book.title}}"></paper-input>
+          <paper-input label="Authors" value="{{book.authors}}"></paper-input>
+          <paper-input label="Text" value="{{book.text}}"></paper-input>
+        </div>
       </div>
     </paper-card>
   </template>
@@ -23,14 +29,25 @@
   Polymer({
     is: 'book-detail',
     properties: {
-      title: {
-        type: String,
-        value: "[book title]",
+      book: {
+        type: Object,
+//        value: {},
+        notify: true,
+        reflectToAttributes: true
       },
-      authors: {
-        type: String,
-        value: "",
+      editing: Boolean
+    },
+    _formatTitle: function(title) {
+      return title || "[no title]";
+    },
+    _formatAuthors: function(authors) {
+      if (authors) {
+        return "By " + authors;
       }
+      return "[no authors]";
+    },
+    _formatText: function(text) {
+      return text || "[no text]";
     }
   });
   </script>
