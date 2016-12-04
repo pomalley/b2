@@ -1,0 +1,28 @@
+{
+  "name": "my-app",
+  "version": "1.0.0",
+  "description": "books",
+  "main": "service-worker.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "typescript": "^2.0.10"
+  },
+  "devDependencies": {
+    "typescript": "^2.0.10"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pomalley/b2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pomalley/b2/issues"
+  },
+  "homepage": "https://github.com/pomalley/b2#readme"
+}

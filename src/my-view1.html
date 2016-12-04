@@ -46,7 +46,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </firebase-document>
     <div class="card">
       <div class="circle">B</div>
-      <paper-toggle-button id="edit" checked="{{editing}}">Edit</paper-toggle-button>
+      <div hidden$="[[isNew]]")>
+        <paper-toggle-button id="edit" checked="{{editing}}">Edit</paper-toggle-button>
+      </div>
       <div>
         <book-detail book="{{data}}" editing="[[editing]]" id="book_detail"></book-detail>
         <div hidden$="[[!isNew]]">
@@ -98,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         console.log("new key: " + newKey);
         if (newKey == "new") {
           this.set("editing", true);
-          this.set("data", {});
+          this.set("data", {"type": "book"});
         } else {
           this.set("editing", false);
         }
