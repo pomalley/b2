@@ -2,5 +2,9 @@ bower_components/
 build/
 node_modules/
 
+# ignore typescript output
+src/*.js
+src/*.js.map
+
 .DS_Store
 .idea/
