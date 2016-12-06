@@ -2,8 +2,13 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "sourceMap": true
+    "sourceMap": true,
+    "experimentalDecorators": true
   },
+  "include": [
+    "bower_components/polymer-ts/*",
+    "src/*"
+  ],
   "exclude": [
     "node_modules"
   ]

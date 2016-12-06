@@ -2,33 +2,29 @@
  * Class for dealing with a book object.
  */
 
-/// <reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-
 @component("book-detail")
 class Book extends polymer.Base {
     @property({notify: true})
-    book: Object;
+    private book: Object;
     @property()
-    editing: Boolean;
+    private editing: Boolean;
     @property({computed: "_formatTitle(book.title)"})
-    formattedTitle: string;
+    private formattedTitle: string;
     @property({computed: "_formatAuthors(book.authors)"})
-    formattedAuthors: string;
+    private formattedAuthors: string;
     @property({computed: "_formatText(book.text)"})
-    formattedText: string;
+    private formattedText: string;
 
-    _formatTitle(title) {
+    private _formatTitle(title) {
         return title || "[no title]";
     }
-
-    _formatAuthors(authors) {
+    private _formatAuthors(authors) {
         if (authors) {
             return "By " + authors;
         }
-            return "[no authors]";
+        return "[no authors]";
     }
-
-    _formatText(text) {
+    private _formatText(text) {
         return text || "[no text]";
     }
 }
