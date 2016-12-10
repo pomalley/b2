@@ -41,7 +41,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         app-name="b2"
         data="{{data}}"
         path="[[fullPath]]"
-        log
       >
     </firebase-document>
     <div class="card">
@@ -97,7 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ],
       _keyChanged: function(newKey) {
         view1 = this;
-        console.log("new key: " + newKey);
+//        console.log("new key: " + newKey);
         if (newKey == "new") {
           this.set("editing", true);
           this.set("data", {"type": "book"});
@@ -106,16 +105,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       _routeKeyChanged: function(newKey) {
-        console.log("routeData.key: " + newKey);
+//        console.log("routeData.key: " + newKey);
         this.key = newKey || "new";
       },
       _routeChanged: function(newRoute) {
-        console.log("route changed: %o", newRoute);
+//        console.log("route changed: %o", newRoute);
       },
       _computeFullPath: function(path, key) {
-        console.log("computeFullPath: path='" + path + "' key='" + key + "'");
+//        console.log("computeFullPath: path='" + path + "' key='" + key + "'");
         if (path && key && key != "new") {
-          console.log("returning real path");
+//          console.log("returning real path");
           return path + '/' + key;
         }
         return undefined;

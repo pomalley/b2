@@ -1,0 +1,19 @@
+<!--Template for a generic field.-->
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<script src="../bower_components/polymer-ts/polymer-ts.js"></script>
+
+<dom-module id="auto-field">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+    </style>
+    <template is="dom-if" if="[[input]]">
+      <paper-input value="{{value}}" label$="[[label]]"></paper-input>
+    </template>
+  </template>
+</dom-module>
+
+<script type="text/javascript" src="auto-field.js"></script>
