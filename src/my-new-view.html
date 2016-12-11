@@ -29,7 +29,7 @@ a page to display a list (of books) resulting from a query
 
     <h1>Book List</h1>
     <template is="dom-repeat" items="{{queryData}}">
-      <div><a href$="/view1/[[item.$key]]">[[item.title]]</a></div>
+      <div><a href$="/view1/[[item.$key]]">[[item.title]] by [[item.authors]]</a></div>
     </template>
     <div>Path: [[queryPath]]</div>
     

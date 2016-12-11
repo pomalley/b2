@@ -41,6 +41,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         app-name="b2"
         data="{{data}}"
         path="[[fullPath]]"
+        log
       >
     </firebase-document>
     <div class="card">
@@ -49,7 +50,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-toggle-button id="edit" checked="{{editing}}">Edit</paper-toggle-button>
       </div>
       <div>
-        <book-detail book="{{data}}" editing="[[editing]]" id="book_detail"></book-detail>
+        <book-detail book="{{data}}" editing="[[editing]]" id="book_detail" is-ready="[[isReady]]"></book-detail>
         <div hidden$="[[!isNew]]">
           <paper-button on-tap="saveData" raised>Save</paper-button>
         </div>
@@ -89,11 +90,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data: {
           type: Object,
           notify: true
+        },
+        isReady: {
+          type: Boolean,
+          computed: "_isReady(data, isNew)"
         }
       },
       observers: [
-        '_routeKeyChanged(routeData.key)',
+        '_routeKeyChanged(routeData.key)'
       ],
+      _isReady: function(data, isNew) {
+        if (isNew) {
+          return true;
+        }
+        return data["_saved"];
+      },
       _keyChanged: function(newKey) {
         view1 = this;
 //        console.log("new key: " + newKey);
@@ -127,6 +138,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return;
         }
         var view1 = this;
+        this.data['_saved'] = true;
         this.$.document.save(this.dbPath)
           .then(
             function(response) {

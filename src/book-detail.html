@@ -24,9 +24,11 @@
         <paper-input label="Authors" value="{{book.authors}}"></paper-input>
         <paper-input label="Text" value="{{book.text}}"></paper-input>
       </div>
+      <div class="card-content">
       <template is="dom-repeat" items="{{autofields}}">
         <auto-field input="true" value="{{item.value}}" label="[[item.label]]"></auto-field>
       </template>
+      </div>
     </paper-card>
   </template>
 </dom-module>
