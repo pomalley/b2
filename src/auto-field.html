@@ -1,6 +1,7 @@
 <!--Template for a generic field.-->
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-tooltip/paper-tooltip.html">
 <script src="../bower_components/polymer-ts/polymer-ts.js"></script>
 <script src="autofieldable.js"></script>
 
@@ -8,6 +9,9 @@
   <template>
     <template is="dom-if" if="[[input]]">
       <paper-input value="{{value}}" label$="[[label]]"></paper-input>
+    </template>
+    <template is="dom-if" if="[[!input]]">
+      <div>[[value]]<paper-tooltip>[[label]]</paper-tooltip></div>
     </template>
   </template>
 </dom-module>

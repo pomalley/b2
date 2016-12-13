@@ -10,24 +10,11 @@
 <dom-module id="book-detail">
   <template>
     <style>
-      :host {
-        display: inline-block;
-      }
     </style>
     <paper-card>
-      <div hidden$="[[editing]]" class="card-content">
-        <div><strong>[[formattedTitle]]</strong></div>
-        <div>[[formattedAuthors]]</div>
-        <div>[[formattedText]]</div>
-      </div>
-      <div hidden$="[[!editing]]" class="card-content">
-        <paper-input label="Title" value="{{book.title}}"></paper-input>
-        <paper-input label="Authors" value="{{book.authors}}"></paper-input>
-        <paper-input label="Text" value="{{book.text}}"></paper-input>
-      </div>
       <div class="card-content">
       <template is="dom-repeat" items="{{autofields}}">
-        <auto-field input="true" value="{{item.value}}" label="[[item.label]]"></auto-field>
+        <auto-field input="[[editing]]" value="{{item.value}}" label="[[item.label]]"></auto-field>
       </template>
       </div>
     </paper-card>

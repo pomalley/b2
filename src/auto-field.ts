@@ -12,10 +12,6 @@ class Field extends polymer.Base {
 
   @property()
   public label: string;
-
-  // public ready() {
-  //   console.log("field ready");
-  // }
 }
 
 Field.register();
