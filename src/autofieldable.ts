@@ -13,19 +13,12 @@ interface AutofieldConfig {
   propName: string;
 }
 
-// @component("auto-fielded")
-// @template("")
 class Autofieldable extends polymer.Base {
-  // @property()
-  public autofields: FieldObj[];
-  public autoconfigs: AutofieldConfig[];
-  public addField(fieldConfig: AutofieldConfig) {
-    this.autoconfigs = this.autoconfigs || [];
-    this.autoconfigs.push(fieldConfig);
-  }
+  protected autofields: FieldObj[];
+  protected autoconfigs: AutofieldConfig[];
 
   @property()
-  protected isReady: boolean;
+  private isReady: boolean;
 
   constructor() {
     super();
@@ -34,35 +27,40 @@ class Autofieldable extends polymer.Base {
       this.push("autofields", {label: autoconfig.label, value: "a"});  // TODO(pomalley): value is overwritten, unneeded
     }
   }
+
+  public addField(fieldConfig: AutofieldConfig) {
+    this.autoconfigs = this.autoconfigs || [];
+    this.autoconfigs.push(fieldConfig);
+
+    let n = this.autoconfigs.length - 1;
+    console.log("fieldConfig: ", fieldConfig, " n: ", n, " this: ", this);
+    this["__autoObserve" + fieldConfig.propName] = function(newValue) {
+      // console.log("auto obs of " + fieldConfig.propName + " new: " + newValue);
+      this.set(fieldConfig.path, newValue);
+    };
+    observe(fieldConfig.propName)(this, "__autoObserve" + fieldConfig.propName);
+
+    this["__autoObserve" + fieldConfig.path.split(".").join("_")] = function(newValue) {
+      // console.log("auto obs of " + fieldConfig.path + " new: " + newValue);
+      this.set(fieldConfig.propName, newValue);
+      this.set("autofields.#" + n + ".value", newValue);
+    };
+    observe(fieldConfig.path)(this, "__autoObserve" + fieldConfig.path.split(".").join("_"));
+
+    this["__autoObserve" + n] = function(newValue) {
+      // console.log("auto obs # " + n + " new: " + newValue + " (isready: " + this.isReady + ")");
+      if (this.isReady) {
+        this.set(fieldConfig.path, newValue);
+      }
+    };
+    observe("autofields.#" + n + ".value")(this, "__autoObserve" + n);
+  }
 }
 // Autofielded.register();
 
-function autofield(fieldObj: {label?: string, path: string}) {
+function autofield(configurator: {label?: string, path: string}) {
   return (target: Autofieldable, name: string) => {
-    fieldObj.label = fieldObj.label || name;
-    target.addField({label: fieldObj.label, path: fieldObj.path, propName: name});
-    const n = target.autoconfigs.length - 1;
-    // TODO(pomalley): clean this up and move these functions into addField (?)
-    target["__autoObserve" + name] = function(newValue) {
-      // console.log("auto obs of " + name + " new: " + newValue);
-      this.set(fieldObj.path, newValue);
-    };
-    observe(name)(target, "__autoObserve" + name);
-
-    target["__autoObserve" + fieldObj.path] = function(newValue) {
-      // console.log("auto obs of " + fieldObj.path + " new: " + newValue);
-      this.set(name, newValue);
-      this.set("autofields.#" + n + ".value", newValue);
-    };
-    observe(fieldObj.path)(target, "__autoObserve" + fieldObj.path);
-
-    target["__autoObserve" + n] = function(newValue) {
-      // console.log("auto obs # " + n + " new: " + newValue + " (isready: " + this.isReady + ")");
-      if (this.isReady) {
-        this.set(fieldObj.path, newValue);
-      }
-    };
-    observe("autofields.#" + n + ".value")(target, "__autoObserve" + n);
+    target.addField({label: configurator.label || name, path: configurator.path, propName: name});
     // chain the property decorator
     return property()(target, name);
   };
