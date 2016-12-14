@@ -4,14 +4,13 @@
 
 @component("auto-field")
 class Field extends polymer.Base {
+  // true to display editable fields, false for read-only
   @property()
-  public input: boolean;
+  public editing: boolean;
 
+  // the item itself.
   @property({notify: true})
-  public value: string;
-
-  @property()
-  public label: string;
+  public item: Autofield;
 }
 
 Field.register();

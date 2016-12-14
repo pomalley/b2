@@ -14,7 +14,7 @@
     <paper-card>
       <div class="card-content">
       <template is="dom-repeat" items="{{autofields}}">
-        <auto-field input="[[editing]]" value="{{item.value}}" label="[[item.label]]"></auto-field>
+        <auto-field editing="[[editing]]" item="{{item}}"></auto-field>
       </template>
       </div>
     </paper-card>

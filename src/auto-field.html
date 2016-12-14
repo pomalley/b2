@@ -7,11 +7,11 @@
 
 <dom-module id="auto-field">
   <template>
-    <template is="dom-if" if="[[input]]">
-      <paper-input value="{{value}}" label$="[[label]]"></paper-input>
+    <template is="dom-if" if="[[editing]]">
+      <paper-input value="{{item.value}}" label$="[[item.label]]"></paper-input>
     </template>
-    <template is="dom-if" if="[[!input]]">
-      <div>[[value]]<paper-tooltip>[[label]]</paper-tooltip></div>
+    <template is="dom-if" if="[[!editing]]">
+      <div>[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
     </template>
   </template>
 </dom-module>
