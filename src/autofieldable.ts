@@ -2,19 +2,26 @@
  * Autofieldable objects will have automatically generated controls for their (annotated) fields.
  */
 
-interface FieldObj {
+interface Autofield {
   label: string;
   value: any;
+  displayValue: string;
 }
 
 interface AutofieldConfig {
   label: string;
   path: string;
   propName: string;
+  displayValue?: (value: any) => string;
+}
+
+// make a function that replaces an empty string with the given string. for use as a displayValue.
+function emptyReplacer(replacement: string) {
+  return (value: any) => { return value || replacement; };
 }
 
 class Autofieldable extends polymer.Base {
-  protected autofields: FieldObj[];
+  protected autofields: Autofield[];
   protected autoconfigs: AutofieldConfig[];
 
   @property()
@@ -29,6 +36,7 @@ class Autofieldable extends polymer.Base {
   }
 
   public addField(fieldConfig: AutofieldConfig) {
+    fieldConfig.displayValue = fieldConfig.displayValue || ((newValue: string) => { return newValue; });
     this.autoconfigs = this.autoconfigs || [];
     this.autoconfigs.push(fieldConfig);
     let n = this.autoconfigs.length - 1;
@@ -45,6 +53,7 @@ class Autofieldable extends polymer.Base {
     function observeOriginal(newValue) {
       this.set(fieldConfig.propName, newValue);
       this.set("autofields.#" + n + ".value", newValue);
+      this.set("autofields.#" + n + ".displayValue", fieldConfig.displayValue(newValue));
     }
     observe(fieldConfig.path)(this, "__autoObserve" + fieldConfig.path.split(".").join("_"));
 
@@ -58,9 +67,14 @@ class Autofieldable extends polymer.Base {
   }
 }
 
-function autofield(configurator: {label?: string, path: string}) {
+function autofield(configurator: {label?: string, path: string, displayValue?: (value: any) => string}) {
   return (target: Autofieldable, name: string) => {
-    target.addField({label: configurator.label || name, path: configurator.path, propName: name});
+    target.addField({
+      displayValue: configurator.displayValue,
+      label: configurator.label || name,
+      path: configurator.path,
+      propName: name,
+      });
     // chain the property decorator
     return property()(target, name);
   };
