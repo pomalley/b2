@@ -31,32 +31,32 @@ class Autofieldable extends polymer.Base {
   public addField(fieldConfig: AutofieldConfig) {
     this.autoconfigs = this.autoconfigs || [];
     this.autoconfigs.push(fieldConfig);
-
     let n = this.autoconfigs.length - 1;
-    console.log("fieldConfig: ", fieldConfig, " n: ", n, " this: ", this);
-    this["__autoObserve" + fieldConfig.propName] = function(newValue) {
-      // console.log("auto obs of " + fieldConfig.propName + " new: " + newValue);
+
+    // Observers to sync the values.
+    // Note that we can't use () => {} notation because this must refer to the instantiated object, not the prototype.
+    this["__autoObserve" + fieldConfig.propName] = observeProperty;
+    function observeProperty(newValue) {
       this.set(fieldConfig.path, newValue);
-    };
+    }
     observe(fieldConfig.propName)(this, "__autoObserve" + fieldConfig.propName);
 
-    this["__autoObserve" + fieldConfig.path.split(".").join("_")] = function(newValue) {
-      // console.log("auto obs of " + fieldConfig.path + " new: " + newValue);
+    this["__autoObserve" + fieldConfig.path.split(".").join("_")] = observeOriginal;
+    function observeOriginal(newValue) {
       this.set(fieldConfig.propName, newValue);
       this.set("autofields.#" + n + ".value", newValue);
-    };
+    }
     observe(fieldConfig.path)(this, "__autoObserve" + fieldConfig.path.split(".").join("_"));
 
-    this["__autoObserve" + n] = function(newValue) {
-      // console.log("auto obs # " + n + " new: " + newValue + " (isready: " + this.isReady + ")");
+    this["__autoObserve" + n] = observeArray;
+    function observeArray(newValue) {
       if (this.isReady) {
         this.set(fieldConfig.path, newValue);
       }
-    };
+    }
     observe("autofields.#" + n + ".value")(this, "__autoObserve" + n);
   }
 }
-// Autofielded.register();
 
 function autofield(configurator: {label?: string, path: string}) {
   return (target: Autofieldable, name: string) => {
