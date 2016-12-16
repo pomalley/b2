@@ -2,16 +2,19 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
 <script src="../bower_components/polymer-ts/polymer-ts.js"></script>
+<script src="../node_modules/reflect-metadata/Reflect.js"></script>
 <script src="autofieldable.js"></script>
 
 <dom-module id="auto-field">
   <template>
-    <template is="dom-if" if="[[input]]">
-      <paper-input value="{{value}}" label$="[[label]]"></paper-input>
+    <template is="dom-if" if="[[isString]]">
+      <paper-input hidden$="{{!editing}}" value="{{item.value}}" label$="[[item.label]]"></paper-input>
+      <div hidden$="{{editing}}">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
     </template>
-    <template is="dom-if" if="[[!input]]">
-      <div>[[value]]<paper-tooltip>[[label]]</paper-tooltip></div>
+    <template is="dom-if" if="[[isBoolean]]">
+      <div><paper-checkbox checked="{{item.value}}" disabled$="{{!editing}}">[[item.label]]</paper-checkbox></div>
     </template>
   </template>
 </dom-module>

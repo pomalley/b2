@@ -7,44 +7,29 @@ class Book extends Autofieldable {
   @property({notify: true})
   private book;
 
-  @property()
+  @property({type: Boolean})
   private editing: boolean;
 
-  // @property({computed: "_formatTitle(book.title)"})
-  // private formattedTitle: string;
-
-  // @property({computed: "_formatAuthors(book.authors)"})
-  // private formattedAuthors: string;
-
-  // @property({computed: "_formatText(book.text)"})
-  // private formattedText: string;
-
-  @autofield({label: "Title", path: "book.title"})
+  @autofield({label: "Title", path: "book.title", displayValue: emptyReplacer("[no title}")})
   private Title: string;
 
-  @autofield({path: "book.authors"})
+  @autofield({label: "Authors", path: "book.authors", displayValue: emptyReplacer("[no authors]")})
   private authors: string;
 
-  @autofield({label: "text", path: "book.text"})
+  @autofield({label: "Text", path: "book.text", displayValue: emptyReplacer("[no text]")})
   private text: string;
 
-  // @observe("book")
-  // private bookChanged(book) {
-  //   console.log("book changed: ", book.title + "|" + book.authors);
-  // }
+  @autofield({path: "book.read", groups: ["personal"]})
+  private read: boolean;
 
-  // private _formatTitle(title) {
-  //   return title || "[no title]";
-  // }
-  // private _formatAuthors(authors) {
-  //   if (authors) {
-  //     return "By " + authors;
-  //   }
-  //   return "[no authors]";
-  // }
-  // private _formatText(text) {
-  //   return text || "[no text]";
-  // }
+  @autofield({path: "book.owned"})
+  private owned: boolean = false;
+
+  @autofield({label: "want to read", path: "book.wantToRead", groups: ["personal"]})
+  private wantToRead: boolean;
+
+  @autofield({label: "want to own", path: "book.wantToOwn", groups: ["personal"]})
+  private wantToOwn: boolean;
 }
 
 Book.register();
