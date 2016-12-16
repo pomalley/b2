@@ -12,14 +12,22 @@ class Field extends polymer.Base {
   @property({notify: true})
   public item: Autofield;
 
-  @computed()
+  //noinspection JSMethodCanBeStatic
+  @computed({type: Boolean})
   public isBoolean(item) {
     return item.type === Boolean;
   }
 
-  @computed()
+  //noinspection JSMethodCanBeStatic
+  @computed({type: Boolean})
   public isString(item) {
     return item.type === String;
+  }
+
+  //noinspection JSMethodCanBeStatic
+  @computed({type: Boolean})
+  public unknownType(isBoolean, isString) {
+    return !isBoolean && !isString;
   }
 }
 

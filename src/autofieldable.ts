@@ -37,7 +37,11 @@ class Autofieldable extends polymer.Base {
     this.autofields = [];
     for (let autoconfig of this.autoconfigs) {
       // TODO(pomalley): value is overwritten, unneeded
-      this.push("autofields", {label: autoconfig.label, value: "a", type: this.properties[autoconfig.propName].type});
+      this.push("autofields", {
+        label: autoconfig.label,
+        type: this["properties"][autoconfig.propName].type,
+        value: "a",
+      });
     }
   }
 
@@ -76,7 +80,6 @@ class Autofieldable extends polymer.Base {
 function autofield(conf: {path: string, label?: string, displayValue?: (value: any) => string, groups?: string[]}) {
   return (target: Autofieldable, name: string) => {
     let t = Reflect.getMetadata("design:type", target, name);
-    console.log(`${name} type: `, t.name);
 
     target.addField({
       displayValue: conf.displayValue,
