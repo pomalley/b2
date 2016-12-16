@@ -2,10 +2,14 @@
  * Autofieldable objects will have automatically generated controls for their (annotated) fields.
  */
 
+// import "../node_modules/reflect-metadata/reflect-metadata.d.ts";
+/// <reference path="../node_modules/reflect-metadata/reflect-metadata.d.ts" />
+
 interface Autofield {
   label: string;
   value: any;
   displayValue: string;
+  type: any;
 }
 
 interface AutofieldConfig {
@@ -13,6 +17,7 @@ interface AutofieldConfig {
   path: string;
   propName: string;
   displayValue?: (value: any) => string;
+  groups: string[];
 }
 
 // make a function that replaces an empty string with the given string. for use as a displayValue.
@@ -31,7 +36,8 @@ class Autofieldable extends polymer.Base {
     super();
     this.autofields = [];
     for (let autoconfig of this.autoconfigs) {
-      this.push("autofields", {label: autoconfig.label, value: "a"});  // TODO(pomalley): value is overwritten, unneeded
+      // TODO(pomalley): value is overwritten, unneeded
+      this.push("autofields", {label: autoconfig.label, value: "a", type: this.properties[autoconfig.propName].type});
     }
   }
 
@@ -67,15 +73,19 @@ class Autofieldable extends polymer.Base {
   }
 }
 
-function autofield(configurator: {label?: string, path: string, displayValue?: (value: any) => string}) {
+function autofield(conf: {path: string, label?: string, displayValue?: (value: any) => string, groups?: string[]}) {
   return (target: Autofieldable, name: string) => {
+    let t = Reflect.getMetadata("design:type", target, name);
+    console.log(`${name} type: `, t.name);
+
     target.addField({
-      displayValue: configurator.displayValue,
-      label: configurator.label || name,
-      path: configurator.path,
+      displayValue: conf.displayValue,
+      groups: conf.groups || [],
+      label: conf.label || name,
+      path: conf.path,
       propName: name,
-      });
+    });
     // chain the property decorator
-    return property()(target, name);
+    return property({type: t})(target, name);
   };
 }

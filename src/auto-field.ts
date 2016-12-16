@@ -11,6 +11,16 @@ class Field extends polymer.Base {
   // the item itself.
   @property({notify: true})
   public item: Autofield;
+
+  @computed()
+  public isBoolean(item) {
+    return item.type === Boolean;
+  }
+
+  @computed()
+  public isString(item) {
+    return item.type === String;
+  }
 }
 
 Field.register();
