@@ -30,6 +30,17 @@ class Book extends Autofieldable {
 
   @autofield({label: "want to own", path: "book.wantToOwn", groups: ["personal"]})
   private wantToOwn: boolean;
+
+  @autofield<string>({
+    displayValue: (value: String) => {
+      return value ? "Date read: " + value : "[no read date]";
+    },
+    groups: ["personal"],
+    label: "Date Read",
+    path: "book.dateRead",
+    validator: monthDateValidator,
+  })
+  private dateRead: string;
 }
 
 Book.register();

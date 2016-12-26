@@ -12,12 +12,13 @@ interface Autofield {
   type: any;
 }
 
-interface AutofieldConfig {
+interface AutofieldConfig<T> {
   label: string;
   path: string;
   propName: string;
-  displayValue?: (value: any) => string;
+  displayValue?: (value: T) => string;
   groups: string[];
+  validator?: (value: T) => boolean;
 }
 
 // make a function that replaces an empty string with the given string. for use as a displayValue.
@@ -25,9 +26,21 @@ function emptyReplacer(replacement: string) {
   return (value: any) => { return value || replacement; };
 }
 
+function monthDateValidator(value: string) {
+  const vals = value.split("/", 2);
+  return !!(0 < parseInt(vals[0], 10) && parseInt(vals[0], 10) < 13 && parseInt(vals[1], 10));
+}
+
+function monthDisplayer(date: Date) {
+  if (!date) {
+    return "[no date]";
+  }
+  return (date.getMonth() + 1) + "-" + date.getFullYear();
+}
+
 class Autofieldable extends polymer.Base {
   protected autofields: Autofield[];
-  protected autoconfigs: AutofieldConfig[];
+  protected autoconfigs: Array<AutofieldConfig<any>>;
 
   @property()
   private isReady: boolean;
@@ -45,8 +58,11 @@ class Autofieldable extends polymer.Base {
     }
   }
 
-  public addField(fieldConfig: AutofieldConfig) {
-    fieldConfig.displayValue = fieldConfig.displayValue || ((newValue: string) => { return newValue; });
+  public addField<T>(fieldConfig: AutofieldConfig<T>) {
+    fieldConfig.displayValue = fieldConfig.displayValue || ((value: T) => {
+      return value !== undefined ? value.toString() : "";
+    });
+    fieldConfig.validator = fieldConfig.validator || ((value: T) => { return true; });
     this.autoconfigs = this.autoconfigs || [];
     this.autoconfigs.push(fieldConfig);
     let n = this.autoconfigs.length - 1;
@@ -77,7 +93,8 @@ class Autofieldable extends polymer.Base {
   }
 }
 
-function autofield(conf: {path: string, label?: string, displayValue?: (value: any) => string, groups?: string[]}) {
+function autofield<T>(conf: {path: string, label?: string, displayValue?: (value: T) => string, groups?: string[],
+                             validator?: (value: T) => boolean}) {
   return (target: Autofieldable, name: string) => {
     let t = Reflect.getMetadata("design:type", target, name);
 

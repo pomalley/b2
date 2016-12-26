@@ -16,6 +16,9 @@
     <template is="dom-if" if="[[isBoolean]]">
       <div><paper-checkbox checked="{{item.value}}" disabled$="{{!editing}}">[[item.label]]</paper-checkbox></div>
     </template>
+    <template is="dom-if" if="[[isDate]]">
+      <div hidden$="{{editing}}">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
+    </template>
   </template>
 </dom-module>
 
