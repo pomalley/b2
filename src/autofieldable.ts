@@ -38,6 +38,10 @@ function monthDateValidator(value: string) {
   return 0 < Number(vals[0]) && Number(vals[0]) < 13 && Number(vals[1]) > 1000;
 }
 
+function intValidator(value: number) {
+  return (value !== undefined) && (value % 1 === 0);
+}
+
 class Autofieldable extends polymer.Base {
   protected autofields: Autofield[];
   protected autoconfigs: Array<AutofieldConfig<any>>;

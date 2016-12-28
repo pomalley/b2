@@ -21,6 +21,13 @@
                    invalid="{{invalid}}"></paper-input>
       <div hidden$="{{editing}}">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
     </template>
+    <template is="dom-if" if="[[isNumber]]">
+      <paper-input-container hidden$="{{!editing}}" invalid="{{invalid}}">
+        <label>[[item.label]]</label>
+        <input is="iron-input" bind-value="{{item.value}}" type="number">
+      </paper-input-container>
+      <div hidden$="{{editing}}">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
+    </template>
     <template is="dom-if" if="[[isBoolean]]">
       <div><paper-checkbox checked="{{item.value}}" disabled$="{{!editing}}">[[item.label]]</paper-checkbox></div>
     </template>

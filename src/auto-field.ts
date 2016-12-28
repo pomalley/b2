@@ -34,10 +34,15 @@ class Field extends polymer.Base {
     return item.type === Date;
   }
 
+  @computed({type: Boolean})
+  public isNumber(item) {
+    return item.type === Number;
+  }
+
   //noinspection JSMethodCanBeStatic
   @computed({type: Boolean})
-  public unknownType(isBoolean, isString, isDate) {
-    return !isBoolean && !isString && !isDate;
+  public unknownType(isBoolean, isString, isDate, isNumber) {
+    return !isBoolean && !isString && !isDate && !isNumber;
   }
 
   // overrides fn in IronValidatableBehavior
