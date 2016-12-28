@@ -3,10 +3,15 @@
  */
 
 @component("auto-field")
+@behavior(Polymer["IronValidatableBehavior"])
 class Field extends polymer.Base {
   // true to display editable fields, false for read-only
   @property()
   public editing: boolean;
+
+  // validity of current user input
+  @property({notify: true})
+  public invalid: boolean;
 
   // the item itself.
   @property({notify: true})
@@ -33,6 +38,17 @@ class Field extends polymer.Base {
   @computed({type: Boolean})
   public unknownType(isBoolean, isString, isDate) {
     return !isBoolean && !isString && !isDate;
+  }
+
+  // overrides fn in IronValidatableBehavior
+  public _getValidity() {
+    return this.item.validator(this.item.value);
+  }
+
+  @listen("input")
+  public onChange() {
+    //noinspection TsLint
+    this["validate"]();  // validate() gets added by @behavior, typescript doesn't seem to pick it up
   }
 }
 

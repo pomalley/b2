@@ -3,14 +3,22 @@
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/iron-validatable-behavior/iron-validatable-behavior.html">
+
 <script src="../bower_components/polymer-ts/polymer-ts.js"></script>
 <script src="../node_modules/reflect-metadata/Reflect.js"></script>
 <script src="autofieldable.js"></script>
 
 <dom-module id="auto-field">
   <template>
+    <style>
+      :host([invalid]) div {
+        border-color: darkorange;
+      }
+    </style>
     <template is="dom-if" if="[[isString]]">
-      <paper-input hidden$="{{!editing}}" value="{{item.value}}" label$="[[item.label]]"></paper-input>
+      <paper-input hidden$="{{!editing}}" value="{{item.value}}" label$="[[item.label]]"
+                   invalid="{{invalid}}"></paper-input>
       <div hidden$="{{editing}}">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
     </template>
     <template is="dom-if" if="[[isBoolean]]">

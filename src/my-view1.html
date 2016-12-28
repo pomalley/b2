@@ -41,16 +41,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         app-name="b2"
         data="{{data}}"
         path="[[fullPath]]"
+        disabled="[[!bookValid]]"
         log
       >
     </firebase-document>
     <div class="card">
+      <div>bookValid = [[bookValid]]</div>
       <div class="circle">B</div>
       <div hidden$="[[isNew]]">
         <paper-toggle-button id="edit" checked="{{editing}}">Edit</paper-toggle-button>
       </div>
       <div>
-        <book-detail book="{{data}}" editing="[[editing]]" id="book_detail" is-ready="[[isReady]]"></book-detail>
+        <book-detail book="{{data}}" editing="[[editing]]" id="book_detail" is-ready="[[isReady]]"
+                     all-valid="{{bookValid}}"></book-detail>
         <div hidden$="[[!isNew]]">
           <paper-button on-tap="saveData" raised>Save</paper-button>
         </div>
@@ -94,7 +97,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         isReady: {
           type: Boolean,
           computed: "_isReady(data, isNew)"
-        }
+        },
+        bookValid: Boolean
       },
       observers: [
         '_routeKeyChanged(routeData.key)'
