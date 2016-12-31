@@ -17,22 +17,32 @@
       }
     </style>
     <template is="dom-if" if="[[isString]]">
-      <paper-input hidden$="{{!editing}}" value="{{item.value}}" label$="[[item.label]]"
+      <paper-input hidden$="[[!editing]]" value="{{item.value}}" label$="[[item.label]]"
                    invalid="{{invalid}}"></paper-input>
-      <div hidden$="{{editing}}">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
+      <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
     </template>
     <template is="dom-if" if="[[isNumber]]">
-      <paper-input-container hidden$="{{!editing}}" invalid="{{invalid}}">
+      <paper-input-container hidden$="[[!editing]]" invalid="{{invalid}}">
         <label>[[item.label]]</label>
         <input is="iron-input" bind-value="{{item.value}}" type="number" title="[[item.label]]">
       </paper-input-container>
-      <div hidden$="{{editing}}">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
+      <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
     </template>
     <template is="dom-if" if="[[isBoolean]]">
-      <div><paper-checkbox checked="{{item.value}}" disabled$="{{!editing}}">[[item.label]]</paper-checkbox></div>
+      <div><paper-checkbox checked="{{item.value}}" disabled$="[[!editing]]">[[item.label]]</paper-checkbox></div>
     </template>
     <template is="dom-if" if="[[isDate]]">
-      <div hidden$="{{editing}}">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
+      <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
+    </template>
+    <template is="dom-if" if="[[isArray]]">
+      <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
+      <template is="dom-repeat" items="{{item.value}}" as="subitem">
+        <paper-input value="{{subitem}}" label$="[[item.label]]" hidden$="[[!editing]]"></paper-input>
+      </template>
+      <paper-input id="newSubitem" hidden$="[[!editing]]" label$="[[item.label]]"></paper-input>
+    </template>
+    <template is="dom-if" if="[[unknownType]]">
+      <div style="color:darkorange">UNKNOWN TYPE: [[item.displayValue]]</div>
     </template>
   </template>
 </dom-module>

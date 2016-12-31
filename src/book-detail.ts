@@ -14,7 +14,7 @@ class Book extends Autofieldable {
   private Title: string;
 
   @autofield({label: "Authors", path: "book.authors", displayValue: emptyReplacer("[no authors]")})
-  private authors: string;
+  private authors: string[];
 
   @autofield({label: "Year", path: "book.year", displayValue: emptyReplacer("[no year]"), validator: intValidator})
   private year: number;
