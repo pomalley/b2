@@ -10,7 +10,7 @@ class Book extends Autofieldable {
   @property({type: Boolean})
   private editing: boolean;
 
-  @autofield({label: "Title", path: "book.title", displayValue: emptyReplacer("[no title}")})
+  @autofield({label: "Title", path: "book.title", displayValue: emptyReplacer("[no title]")})
   private Title: string;
 
   @autofield({label: "Authors", path: "book.authors", displayValue: emptyReplacer("[no authors]")})
@@ -19,13 +19,16 @@ class Book extends Autofieldable {
   @autofield({label: "Year", path: "book.year", displayValue: emptyReplacer("[no year]"), validator: intValidator})
   private year: number;
 
-  @autofield({label: "Text", path: "book.text", displayValue: emptyReplacer("[no text]")})
-  private text: string;
+  @autofield({label: "Subjects", path: "book.subjects", displayValue: emptyReplacer("[no subjects]")})
+  private subjects: string[];
+
+  @autofield({label: "Genre", path: "book.genre", displayValue: emptyReplacer("[no genre]")})
+  private genre: string[];
 
   @autofield({path: "book.read", groups: ["personal"]})
   private read: boolean;
 
-  @autofield({path: "book.owned"})
+  @autofield({path: "book.owned", groups: ["personal"]})
   private owned: boolean = false;
 
   @autofield({label: "want to read", path: "book.wantToRead", groups: ["personal"]})
@@ -33,6 +36,9 @@ class Book extends Autofieldable {
 
   @autofield({label: "want to own", path: "book.wantToOwn", groups: ["personal"]})
   private wantToOwn: boolean;
+
+  @autofield({label: "Comments", path: "book.comment", groups: ["personal"]})
+  private comment: string;
 
   @autofield<string>({
     displayValue: (value: String) => {

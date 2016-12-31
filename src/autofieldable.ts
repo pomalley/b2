@@ -112,7 +112,7 @@ function autofield<T>(conf: {path: string, label?: string, displayValue?: (value
       label: conf.label || name,
       path: conf.path,
       propName: name,
-      validator: conf.validator || ((value: T) => { return true; }),
+      validator: conf.validator || (() => { return true; }),
     });
     // chain the property decorator
     return property({type: t})(target, name);
