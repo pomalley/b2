@@ -1,0 +1,62 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="google-books-entry">
+  <template>
+    <style>
+      paper-dialog.gbookSelector {
+        border: 2px solid;
+        width: 100%;
+      }
+    </style>
+    <!-- Popup dialog to allow selection -->
+    <paper-dialog id="dialog" class="gbookSelector" always-on-top no-overlap horizontal-align="left"
+                  vertical-align="bottom">
+      <h2>[[entry.volumeInfo.title]]</h2>
+      <p hidden$="[[!entry.volumeInfo.subtitle]]">[[entry.volumeInfo.subtitle]]</p>
+      <p hidden$="[[!entry.volumeInfo.authors.length]]">[[entry.volumeInfo.authors]]</p>
+      <div class="buttons">
+       <a href="[[entry.volumeInfo.previewLink]]" target="_blank">
+         <paper-button raised>Google Books Page<iron-icon icon="icons:open-in-new"></iron-icon></paper-button>
+       </a>
+        <paper-button dialog-dismiss raised>Cancel</paper-button>
+        <paper-button dialog-confirm autofocus raised>Use this entry</paper-button>
+      </div>
+    </paper-dialog>
+    <!-- Image for user to click on to get popup -->
+    <iron-image id="image" src="[[entry.volumeInfo.imageLinks.thumbnail]]" on-click="imageClick"></iron-image>
+  </template>
+  <script>
+    Polymer({
+      is: 'google-books-entry',
+      properties: {
+        'entry': {
+          type: Object
+        },
+        'selected': {
+          type: Boolean,
+          notify: true
+        }
+      },
+      listeners: {
+        'dialog.iron-overlay-closed': 'dialogClosed'
+      },
+      imageClick: function() {
+        this.$.dialog.positionTarget = this.$.image;
+        this.$.dialog.open();
+      },
+      dialogClosed: function (event) {
+        if (!event.detail.canceled && event.detail.confirmed) {
+          this.selected = true;
+          this.fire('gbooks-entry-selected', {selected: true, entry: this.entry});
+        } else if (!event.detail.canceled && !event.detail.confirmed) {
+          this.selected = false;
+          this.fire('gbooks-entry-selected', {selected: false, entry: this.entry});
+        }
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,26 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="google-books-entry.html">
+<script src="../bower_components/polymer-ts/polymer-ts.js"></script>
+
+<dom-module id="google-books">
+  <template>
+    <style>
+    </style>
+    <iron-ajax
+      id="ajax"
+      auto
+      url="https://www.googleapis.com/books/v1/volumes"
+      params="[[computeParams]]"
+      handle-as="json"
+      on-response="handleResponse"
+      debounce-duration="300"></iron-ajax>
+    <div>[[results.length]] results</div>
+    <template is="dom-repeat" items="[[results]]">
+      <google-books-entry entry="{{item}}" selected="{{item.selected}}"></google-books-entry>
+    </template>
+  </template>
+</dom-module>
+
+<script type="text/javascript" src="google-books.js"></script>

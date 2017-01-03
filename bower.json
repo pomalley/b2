@@ -19,7 +19,8 @@
     "paper-slider": "PolymerElements/paper-slider#^1.0.12",
     "paper-elements": "PolymerElements/paper-elements#^1.0.7",
     "polymerfire": "firebase/polymerfire#^0.10.3",
-    "polymer-ts": "^0.1.28"
+    "polymer-ts": "^0.1.28",
+    "iron-icons": "^1.2.0"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

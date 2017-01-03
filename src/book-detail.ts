@@ -5,40 +5,40 @@
 @component("book-detail")
 class Book extends Autofieldable {
   @property({notify: true})
-  private book;
+  public book;
 
   @property({type: Boolean})
-  private editing: boolean;
+  public editing: boolean;
 
   @autofield({label: "Title", path: "book.title", displayValue: emptyReplacer("[no title]")})
-  private Title: string;
+  public Title: string;
 
   @autofield({label: "Authors", path: "book.authors", displayValue: emptyReplacer("[no authors]")})
-  private authors: string[];
+  public authors: string[];
 
   @autofield({label: "Year", path: "book.year", displayValue: emptyReplacer("[no year]"), validator: intValidator})
-  private year: number;
+  public year: number;
 
   @autofield({label: "Subjects", path: "book.subjects", displayValue: emptyReplacer("[no subjects]")})
-  private subjects: string[];
+  public subjects: string[];
 
   @autofield({label: "Genre", path: "book.genre", displayValue: emptyReplacer("[no genre]")})
-  private genre: string[];
+  public genre: string[];
 
   @autofield({path: "book.read", groups: ["personal"]})
-  private read: boolean;
+  public read: boolean;
 
   @autofield({path: "book.owned", groups: ["personal"]})
-  private owned: boolean = false;
+  public owned: boolean = false;
 
   @autofield({label: "want to read", path: "book.wantToRead", groups: ["personal"]})
-  private wantToRead: boolean;
+  public wantToRead: boolean;
 
   @autofield({label: "want to own", path: "book.wantToOwn", groups: ["personal"]})
-  private wantToOwn: boolean;
+  public wantToOwn: boolean;
 
   @autofield({label: "Comments", path: "book.comment", groups: ["personal"]})
-  private comment: string;
+  public comment: string;
 
   @autofield<string>({
     displayValue: (value: String) => {
@@ -49,7 +49,19 @@ class Book extends Autofieldable {
     path: "book.dateRead",
     validator: monthDateValidator,
   })
-  private dateRead: string;
+  public dateRead: string;
+
+  @listen("gbooks-entry-selected")
+  public entrySelected(event, detail) {
+    if (detail.selected) {
+      const mine = ["authors", "title", "identifiers", "genre", "imageLinks", "year"];
+      const theirs = ["authors", "title", "industryIdentifiers", "categories", "imageLinks", "publishedDate"];
+      for (let i = 0; i < mine.length; i++) {
+        this.set("book." + mine[i], detail.entry.volumeInfo[theirs[i]]);
+      }
+      this.set("book.gbooksId", detail.entry.id);
+    }
+  }
 }
 
 Book.register();
