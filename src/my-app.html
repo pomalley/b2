@@ -35,10 +35,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         --app-primary-color: #4285f4;
         --app-secondary-color: black;
-
         display: block;
       }
-
       app-header {
         color: #fff;
         background-color: var(--app-primary-color);
@@ -46,26 +44,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
-
       .drawer-list {
         margin: 0 20px;
       }
-
       .drawer-list a {
         display: block;
-
         padding: 0 16px;
-
         text-decoration: none;
-
         color: var(--app-secondary-color);
-
         line-height: 40px;
       }
-
       .drawer-list a.iron-selected {
         color: black;
-
         font-weight: bold;
       }
     </style>
@@ -88,10 +78,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             signedIn="{{signedIn}}">
         </book-firebase>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="/view1/new">View One</a>
-          <a name="new-view" href="/new-view">New View</a>
-          <a name="login" href="/login">log in</a>
-          <a name="view404" href="/view404">404</a>
+          <a name="book" href="/book/new">New Book</a>
+          <a name="all-books" href="/all-books">All Books</a>
         </iron-selector>
       </app-drawer>
 
@@ -108,12 +96,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <iron-pages
             selected="[[page]]"
             attr-for-selected="name"
-            fallback-selection="view404"
+            fallback-selection="view-404"
             role="main">
-          <my-view1 name="view1" db-path="/users/[[user.uid]]" route="{{subroute}}"></my-view1>
-          <my-new-view name="new-view" query-path="/users/[[user.uid]]"></my-new-view>
-          <my-view404 name="view404"></my-view404>
-          <my-login name="login"></my-login>
+          <view-book name="book" db-path="/users/[[user.uid]]" route="{{subroute}}"></view-book>
+          <view-all-books name="all-books" query-path="/users/[[user.uid]]"></view-all-books>
+          <view-404 name="404"></view-404>
+          <view-login name="login"></view-login>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
@@ -122,7 +110,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     Polymer({
       is: 'my-app',
-
       properties: {
         page: {
           type: String,
@@ -130,34 +117,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           observer: '_pageChanged'
         }
       },
-
       observers: [
         '_routePageChanged(routeData.page)',
         '_subrouteChanged(subroute)'
       ],
-
       _routePageChanged: function(page) {
-        this.page = page || 'new-view';
+        this.page = page || 'all-books';
       },
-
       _subrouteChanged: function(subroute) {
         console.log("subroute: " + subroute.prefix + " " + subroute.path + " %o", subroute);
       },
-
       _pageChanged: function(page) {
         // Load page import on demand. Show 404 page if fails
         // TODO(#7): fix up the login timing stuff
 //        console.log(this.signedIn);
 //        if (!this.signedIn) {
-//          var resolvedPageUrl = this.resolveUrl('my-login.html');
+//          var resolvedPageUrl = this.resolveUrl('view-login.html');
 //        } else {
-          var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+          var resolvedPageUrl = this.resolveUrl('view-' + page + '.html');
 //        }
         this.importHref(resolvedPageUrl, null, this._showPage404, true);
       },
-
       _showPage404: function() {
-        this.page = 'view404';
+        this.page = '404';
       }
     });
   </script>
