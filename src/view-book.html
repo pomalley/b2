@@ -28,6 +28,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         padding: 10px;
       }
+      paper-button.save {
+        color: white;
+        background-color: var(--paper-blue-500);
+      }
+      paper-button.delete {
+        color: white;
+        background-color: var(--paper-red-500);
+      }
     </style>
 
     <app-route
@@ -53,7 +61,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <book-detail book="{{data}}" editing="[[editing]]" id="book_detail" is-ready="[[isReady]]"
                      all-valid="{{bookValid}}"></book-detail>
         <div hidden$="[[!isNew]]">
-          <paper-button on-tap="saveData" raised>Save</paper-button>
+          <paper-button on-tap="saveData" raised class="save">Save</paper-button>
+        </div>
+        <div hidden$="[[isNew]]">
+          <paper-button on-tap="showDeleteDialog" raised class="delete">Delete</paper-button>
+          <paper-dialog id="deleteDialog" on-iron-overlay-closed="deleteDialogClosed">
+            <h3>Delete this book?</h3>
+            <div class="buttons">
+              <paper-button dialog-dismiss raised>Cancel</paper-button>
+              <paper-button dialog-confirm autofocus class="delete" raised>Delete</paper-button>
+            </div>
+          </paper-dialog>
         </div>
         <div hidden$="[[isNew]]">path: {{fullPath}}</div>
       </div>
@@ -155,6 +173,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             },
             function(response) { console.log("promise rejected " + response); })
           .catch(function(response) { console.log("failed to save" + response); });
+      },
+      showDeleteDialog: function (){
+        this.$.deleteDialog.open();
+      },
+      deleteDialogClosed: function (event) {
+        if (event.detail.canceled || !event.detail.confirmed) {
+          return;
+        }
+        if (this.$.document.isNew) {
+          return;
+        }
+        var view1 = this;
+        this.$.document.destroy().then(
+          function(response) {
+            view1.set('route.path', 'new');
+          },
+          function(response) {
+            console.log("promise rejected " + response);
+          }
+        ).catch(
+          function(response) {
+            console.log("failed to delete " + response);
+          }
+        );
       }
     });
   </script>
