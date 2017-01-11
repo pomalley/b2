@@ -8,17 +8,29 @@
   <template>
     <style>
     </style>
-    <iron-ajax
-      id="ajax"
-      auto
-      url="https://www.googleapis.com/books/v1/volumes"
-      params="[[computeParams]]"
-      handle-as="json"
-      on-response="handleResponse"
-      debounce-duration="300"></iron-ajax>
-    <div>[[results.length]] results</div>
-    <template is="dom-repeat" items="[[results]]">
-      <google-books-entry entry="{{item}}" selected="{{item.selected}}"></google-books-entry>
+    <template is="dom-if" if="[[searchMode]]">
+      <iron-ajax
+        id="ajaxSearch"
+        auto
+        url="https://www.googleapis.com/books/v1/volumes"
+        params="[[computeParams]]"
+        handle-as="json"
+        on-response="handleResponse"
+        debounce-duration="300"></iron-ajax>
+      <div>[[results.length]] results</div>
+      <template is="dom-repeat" items="[[results]]">
+        <google-books-entry entry="{{item}}"></google-books-entry>
+      </template>
+    </template>
+    <template is="dom-if" if="[[!searchMode]]">
+      <iron-ajax
+        id="ajaxLookup"
+        auto
+        url="https://www.googleapis.com/books/v1/volumes/[[gbooksId]]"
+        handle-as="json"
+        on-response="handleResponse"
+        debounce-duration="300"></iron-ajax>
+      <google-books-entry id="lookupEntry" entry="{{lookupResult}}" selected></google-books-entry>
     </template>
   </template>
 </dom-module>

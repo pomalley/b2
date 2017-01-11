@@ -62,6 +62,14 @@ class Book extends Autofieldable {
       this.set("book.gbooksId", detail.entry.id);
     }
   }
+
+  @listen("gbooks-entry-deselected")
+  public entryDeselected(event, detail) {
+    console.log('deselected: ', detail);
+    if (detail.deselected) {
+      this.set("book.gbooksId", "");
+    }
+  }
 }
 
 Book.register();

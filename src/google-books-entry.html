@@ -19,11 +19,17 @@
       <p hidden$="[[!entry.volumeInfo.subtitle]]">[[entry.volumeInfo.subtitle]]</p>
       <p hidden$="[[!entry.volumeInfo.authors.length]]">[[entry.volumeInfo.authors]]</p>
       <div class="buttons">
-       <a href="[[entry.volumeInfo.previewLink]]" target="_blank">
+       <a href="https://books.google.com/books?id=[[entry.id]]" target="_blank">
          <paper-button raised>Google Books Page<iron-icon icon="icons:open-in-new"></iron-icon></paper-button>
        </a>
-        <paper-button dialog-dismiss raised>Cancel</paper-button>
-        <paper-button dialog-confirm autofocus raised>Use this entry</paper-button>
+        <template is="dom-if" if="[[!selected]]">
+          <paper-button dialog-dismiss raised>Cancel</paper-button>
+          <paper-button dialog-confirm autofocus raised>Use this entry</paper-button>
+        </template>
+        <template is="dom-if" if="[[selected]]">
+          <paper-button dialog-confirm raised>De-select this entry</paper-button>
+          <paper-button dialog-dismiss autofocus raised>Very well, then</paper-button>
+        </template>
       </div>
     </paper-dialog>
     <!-- Image for user to click on to get popup -->
@@ -38,7 +44,7 @@
         },
         'selected': {
           type: Boolean,
-          notify: true
+          value: false
         }
       },
       listeners: {
@@ -49,12 +55,10 @@
         this.$.dialog.open();
       },
       dialogClosed: function (event) {
-        if (!event.detail.canceled && event.detail.confirmed) {
-          this.selected = true;
+        if (!event.detail.canceled && event.detail.confirmed && !this.selected) {
           this.fire('gbooks-entry-selected', {selected: true, entry: this.entry});
-        } else if (!event.detail.canceled && !event.detail.confirmed) {
-          this.selected = false;
-          this.fire('gbooks-entry-selected', {selected: false, entry: this.entry});
+        } else if (!event.detail.canceled && event.detail.confirmed && this.selected) {
+          this.fire('gbooks-entry-deselected', {deselected: true, entry: this.entry});
         }
       }
     });
