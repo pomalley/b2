@@ -14,7 +14,6 @@ a page to display a list (of books) resulting from a query
     <style>
       :host {
         display: block;
-
         padding: 16px;
       }
     </style>
@@ -40,7 +39,8 @@ a page to display a list (of books) resulting from a query
       is: 'view-all-books',
 
       properties: {
-        queryPath: String
+        queryPath: String,
+        queryData: Object
       }
     });
   </script>

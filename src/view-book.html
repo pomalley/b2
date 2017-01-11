@@ -33,8 +33,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-route
         route="{{route}}"
         pattern="/:key"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
+        data="{{routeData}}"></app-route>
 
     <firebase-document
         id="document"
@@ -97,7 +96,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Boolean,
           computed: "_isReady(data, isNew)"
         },
-        bookValid: Boolean
+        routeData: {
+          type: Object
+        },
+        bookValid: Boolean,
+        editing: {
+          type: Boolean,
+          notify: true
+        }
       },
       observers: [
         '_routeKeyChanged(routeData.key)'
