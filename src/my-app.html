@@ -101,7 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             role="main">
           <view-book name="book" db-path="/users/[[user.uid]]" route="{{subroute}}"></view-book>
           <view-all-books name="all-books" query-path="/users/[[user.uid]]"></view-all-books>
-          <view-import name="import"></view-import>
+          <view-import name="import" db-path="/users/[[user.uid]]"></view-import>
           <view-404 name="404"></view-404>
           <view-login name="login"></view-login>
         </iron-pages>

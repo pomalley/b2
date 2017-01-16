@@ -31,13 +31,13 @@ class Book extends Autofieldable {
   @autofield({path: "book.owned", groups: ["personal"]})
   public owned: boolean = false;
 
-  @autofield({label: "want to read", path: "book.wantToRead", groups: ["personal"]})
+  @autofield({label: "want to read", path: "book.want_to_read", groups: ["personal"]})
   public wantToRead: boolean;
 
-  @autofield({label: "want to own", path: "book.wantToOwn", groups: ["personal"]})
+  @autofield({label: "want to own", path: "book.want_to_own", groups: ["personal"]})
   public wantToOwn: boolean;
 
-  @autofield({label: "Comments", path: "book.comment", groups: ["personal"]})
+  @autofield({label: "Comments", path: "book.comments", groups: ["personal"]})
   public comment: string;
 
   @autofield<string>({
@@ -46,7 +46,7 @@ class Book extends Autofieldable {
     },
     groups: ["personal"],
     label: "Date Read",
-    path: "book.dateRead",
+    path: "book.date_read",
     validator: monthDateValidator,
   })
   public dateRead: string;

@@ -1,11 +1,16 @@
 <!--
-book-firebase element
+view-import element
 
-Handles the logic of firebase connections for the b2 app.
+Upload a text file with a JSON array of objects to be imported as books.
+
+Exported from the old books app with: `mongoexport --db books --collection books --out books.json --jsonArray`
+
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/granite-file-reader/granite-file-reader.html">
 
 <link rel="import" href="shared-styles.html">
@@ -17,22 +22,166 @@ Handles the logic of firebase connections for the b2 app.
       paper-button.upload {
         color: white;
         background-color: var(--paper-green-500);
+      }
+
+      div.outer {
         margin: 25px;
       }
+
+      div.outer > * {
+        margin-bottom: 25px;
+      }
+
+      span.title {
+        margin-left: 10px;
+        font-weight: bold;
+      }
+
+      span.author {
+        margin-left: 10px;
+        font-style: italic;
+      }
+
+      span.success {
+        color: var(--paper-green-500);
+      }
+
+      span.error {
+        color: var(--paper-red-500);
+      }
     </style>
+    <firebase-document
+        id="document"
+        app-name="b2"
+        data="{{data}}"
+        log></firebase-document>
+    <div class="outer">
       <granite-file-reader read-as="dataText" accept=".json" on-file-read="fileRead">
         <paper-button raised class="upload">Click here to load a file</paper-button>
       </granite-file-reader>
+      <div hidden$="[[importList]]">Nothing imported yet.</div>
+      <template is="dom-if" if="[[errorList]]">
+        <paper-listbox>
+          <template is="dom-repeat" items="[[errorList]]">
+            <paper-item>
+              <span class="error">Failed to import:</span>
+              <span class="title">[[displayTitle(item)]]</span>
+              <span class="author">[[displayAuthor(item)]]</span>
+            </paper-item>
+          </template>
+        </paper-listbox>
+      </template>
+      <template is="dom-if" if="[[importList]]">
+        <paper-listbox>
+          <template is="dom-repeat" items="[[importList]]">
+            <paper-item>
+              <span class="success">Imported:</span>
+              <span class="title">[[displayTitle(item)]]</span>
+              <span class="author">[[displayAuthor(item)]]</span>
+            </paper-item>
+          </template>
+        </paper-listbox>
+      </template>
+    </div>
   </template>
-    <script>
-      Polymer({
-        is: 'view-import',
-        properties: {
-        },
-        fileRead: function(event) {
-          stuff = JSON.parse(event.detail);
-          console.log(stuff);
-        }
+  <script>
+    function getJsonFromUrl(query) {
+      query = query.split("?")[1];
+      var result = {};
+      query.split("&").forEach(function (part) {
+        if (!part) return;
+        var eq = part.indexOf("=");
+        var key = eq > -1 ? part.substr(0, eq) : part;
+        result[decodeURIComponent(key)] = eq > -1 ? decodeURIComponent(part.substr(eq + 1)) : "";
       });
-    </script>
+      return result;
+    }
+    Polymer({
+      is: 'view-import',
+      properties: {
+        importList: {
+          type: Array,
+          notify: true
+        },
+        errorList: {
+          type: Array,
+          notify: true
+        },
+        dbPath: String
+      },
+      displayTitle: function (book) {
+        if (book.title) {
+          return book.title;
+        } else {
+          return "[Untitled]"
+        }
+      },
+      displayAuthor: function (book) {
+        if (book.authors) {
+          return "by " + book.authors.join(", ");
+        } else {
+          return "[No Authors]"
+        }
+      },
+      fileRead: function (event) {
+        var objects = JSON.parse(event.detail);
+        var books = objects.map(this.importBook).filter(this.filterBook).map(this.saveBook.bind(this));
+      },
+      /**
+       * Transform an anonymous object in to a book (object).
+       * @param object Any old object
+       * @returns {{object}} An object with only a book's fields.
+       */
+      importBook: function (object) {
+        var book = {};
+        var fields = ["authors", "comments", "date_created", "date_read", "date_updated", "genre", "identifiers",
+          "imageLinks", "owned", "read", "subjects", "title", "want_to_own", "want_to_read", "year"];
+        fields.forEach(function (field) {
+          if (object[field] !== undefined && object[field] !== null) {
+            if (object[field]["$date"]) {
+              book[field] = object[field]["$date"];
+            } else {
+              book[field] = object[field];
+            }
+          }
+        });
+        if (object["google_volumes"] && object["google_volumes"][object["google_volumes_idx"]]) {
+          book["gbooksId"] = getJsonFromUrl(object["google_volumes"][object["google_volumes_idx"]]["canonicalVolumeLink"])["id"];
+        }
+        return book;
+      },
+      /**
+       * Filter out a given book.
+       * @param book A book to be queried
+       * @returns {boolean} whether to keep this book
+       */
+      filterBook: function (book) {
+        return !!(book.authors || book.title);
+
+      },
+      /**
+       * Save a book to the server.
+       * @param book The book to save.
+       */
+      saveBook: function (book) {
+        this.importList = this.importList || [];
+        var view1 = this;
+        this.data = book;
+        this.data['_saved'] = true;
+        this.$.document.save(this.dbPath)
+          .then(
+            function () {
+              view1.push("importList", book);
+            },
+            function (response) {
+              view1.push("errorList", book);
+              console.error(response);
+            })
+          .catch(function (response) {
+            view1.push("errorList", book);
+            console.error(response);
+          });
+      }
+    });
+  </script>
 </dom-module>
