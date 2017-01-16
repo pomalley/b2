@@ -20,7 +20,8 @@
     "paper-elements": "PolymerElements/paper-elements#^1.0.7",
     "polymerfire": "firebase/polymerfire#^0.10.3",
     "polymer-ts": "^0.1.28",
-    "iron-icons": "^1.2.0"
+    "iron-icons": "^1.2.0",
+    "granite-file-reader": "LostInBrittany/granite-file-reader#^1.0.3"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
