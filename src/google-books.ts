@@ -29,6 +29,12 @@ class GoogleBooks extends polymer.Base {
   @property({type: String})
   private gbooksId: string;
 
+  public attached() {
+    if (!this.gbooksId) {
+      this.gbooksId = "";
+    }
+  }
+
   /**
    * If true, the element is in "search mode"--query based on book params to find a new book.
    * If false, "lookup mode"--user has already selected a book, and we just look up its details.
