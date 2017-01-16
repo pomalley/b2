@@ -74,8 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <book-firebase
             id="firebase"
             appName="b2"
-            user="{{user}}"
-            signedIn="{{signedIn}}">
+            user="{{user}}">
         </book-firebase>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="book" href="/book/new">New Book</a>
@@ -120,28 +119,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         routeData: Object,
         subroute: Object,
-        user: Object,
-        signedIn: Boolean
+        user: {
+          type: Object,
+          observer: '_userChanged'
+        }
       },
       observers: [
         '_routePageChanged(routeData.page)',
-        '_subrouteChanged(subroute)'
       ],
-      _routePageChanged: function(page) {
-        this.page = page || 'all-books';
+      _userChanged: function(user) {
+        this._routePageChanged(this.routeData.page);
       },
-      _subrouteChanged: function(subroute) {
-        console.log("subroute: " + subroute.prefix + " " + subroute.path + " %o", subroute);
+      _routePageChanged: function(page) {
+        if (!this.user) {
+          this.page = 'login';
+        } else {
+          this.page = page || 'all-books';
+        }
       },
       _pageChanged: function(page) {
-        // Load page import on demand. Show 404 page if fails
-        // TODO(#7): fix up the login timing stuff
-//        console.log(this.signedIn);
-//        if (!this.signedIn) {
-//          var resolvedPageUrl = this.resolveUrl('view-login.html');
-//        } else {
-          var resolvedPageUrl = this.resolveUrl('view-' + page + '.html');
-//        }
+        var resolvedPageUrl = this.resolveUrl('view-' + page + '.html');
         this.importHref(resolvedPageUrl, null, this._showPage404, true);
       },
       _showPage404: function() {

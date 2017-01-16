@@ -54,17 +54,17 @@ Handles the logic of firebase connections for the b2 app.
         }
       },
       signIn: function() {
-        var app = this;
-        this.$.auth.signInWithPopup()
-          .then(function(response) { app._pageChanged(app.page); });
+//        var app = this;
+        this.$.auth.signInWithPopup();
+//          .then(function(response) { app._pageChanged(app.page); });
         // .then(function(response) { alert("success!"); })
         // .catch(function(error) { alert("unsuccess!"); });
       },
       signOut: function() {
-        var app = this;
-        this.$.auth.signOut()
-          .then(function(response) { app.page = 'login'; })
-          .catch(function(response) { console.log("Error on sign out: " + response); app.page = 'login'; });
+//        var app = this;
+        this.$.auth.signOut();
+//          .then(function(response) { app.page = 'login'; })
+//          .catch(function(response) { console.log("Error on sign out: " + response); app.page = 'login'; });
       }
     });
   </script>
