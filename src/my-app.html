@@ -80,6 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="book" href="/book/new">New Book</a>
           <a name="all-books" href="/all-books">All Books</a>
+          <a name="import" href="/import">Import Books</a>
         </iron-selector>
       </app-drawer>
 
@@ -100,6 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             role="main">
           <view-book name="book" db-path="/users/[[user.uid]]" route="{{subroute}}"></view-book>
           <view-all-books name="all-books" query-path="/users/[[user.uid]]"></view-all-books>
+          <view-import name="import"></view-import>
           <view-404 name="404"></view-404>
           <view-login name="login"></view-login>
         </iron-pages>

@@ -1,0 +1,38 @@
+<!--
+book-firebase element
+
+Handles the logic of firebase connections for the b2 app.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/granite-file-reader/granite-file-reader.html">
+
+<link rel="import" href="shared-styles.html">
+
+
+<dom-module id="view-import">
+  <template>
+    <style include="shared-styles">
+      paper-button.upload {
+        color: white;
+        background-color: var(--paper-green-500);
+        margin: 25px;
+      }
+    </style>
+      <granite-file-reader read-as="dataText" accept=".json" on-file-read="fileRead">
+        <paper-button raised class="upload">Click here to load a file</paper-button>
+      </granite-file-reader>
+  </template>
+    <script>
+      Polymer({
+        is: 'view-import',
+        properties: {
+        },
+        fileRead: function(event) {
+          stuff = JSON.parse(event.detail);
+          console.log(stuff);
+        }
+      });
+    </script>
+</dom-module>
