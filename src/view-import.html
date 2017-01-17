@@ -166,8 +166,8 @@ Exported from the old books app with: `mongoexport --db books --collection books
       saveBook: function (book) {
         this.importList = this.importList || [];
         var view1 = this;
+        book["_saved"] = true;
         this.data = book;
-        this.data['_saved'] = true;
         this.$.document.save(this.dbPath)
           .then(
             function () {

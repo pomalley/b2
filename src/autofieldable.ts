@@ -34,8 +34,8 @@ function monthDateValidator(value: string) {
   if (value === "") {
     return true;
   }
-  const vals = value.split("/", 2);
-  return 0 < Number(vals[0]) && Number(vals[0]) < 13 && Number(vals[1]) > 1000;
+  const vals = value.split("-", 2);
+  return 0 < Number(vals[1]) && Number(vals[1]) < 13 && Number(vals[0]) > 1000;
 }
 
 function intValidator(value: number) {
