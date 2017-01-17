@@ -58,7 +58,6 @@ class GoogleBooks extends polymer.Base {
   private handleSearchResponse(event) {
     if (event.detail.response && event.detail.response.totalItems) {
       this.results = event.detail.response.items;
-      this.lookupError = false;
     }
   }
 
