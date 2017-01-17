@@ -57,7 +57,12 @@ class Book extends Autofieldable {
       const mine = ["authors", "title", "identifiers", "genre", "imageLinks", "year"];
       const theirs = ["authors", "title", "industryIdentifiers", "categories", "imageLinks", "publishedDate"];
       for (let i = 0; i < mine.length; i++) {
-        this.set("book." + mine[i], detail.entry.volumeInfo[theirs[i]]);
+        if (theirs[i] === "publishedDate") {
+          // publishedDate can be either YYYY or YYYY-MM-DD
+          this.set("book." + mine[i], detail.entry.volumeInfo[theirs[i]].split("-")[0]);
+        } else {
+          this.set("book." + mine[i], detail.entry.volumeInfo[theirs[i]]);
+        }
       }
       this.set("book.gbooksId", detail.entry.id);
     }
