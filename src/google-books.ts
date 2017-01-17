@@ -29,6 +29,12 @@ class GoogleBooks extends polymer.Base {
   @property({type: String})
   private gbooksId: string;
 
+  /**
+   * If the given gBooksId doesn't work.
+   */
+  @property({type: Boolean, notify: true})
+  private lookupError: boolean;
+
   public attached() {
     if (!this.gbooksId) {
       this.gbooksId = "";
@@ -49,13 +55,24 @@ class GoogleBooks extends polymer.Base {
     return results.length > 0;
   }
 
-  private handleResponse(event) {
-    if (this.searchMode && event.detail.response && event.detail.response.totalItems) {
+  private handleSearchResponse(event) {
+    if (event.detail.response && event.detail.response.totalItems) {
       this.results = event.detail.response.items;
+      this.lookupError = false;
     }
-    if (!this.searchMode && event.detail.response && event.detail.response.volumeInfo) {
+  }
+
+  private handleLookupResponse(event) {
+    if (event.detail.response && event.detail.response.volumeInfo) {
       this.lookupResult = event.detail.response;
+      this.lookupError = false;
+    } else {
+      this.lookupError = true;
     }
+  }
+
+  private handleLookupError(event) {
+    this.lookupError = true;
   }
 
   @computed()
@@ -73,6 +90,15 @@ class GoogleBooks extends polymer.Base {
       return {q: qString};
     }
     return {};
+  }
+
+  @computed()
+  private showDeselect(lookupError, searchMode): boolean {
+    return lookupError && !searchMode;
+  }
+
+  private deselect() {
+    this.fire("gbooks-entry-deselected", {deselected: true});
   }
 }
 

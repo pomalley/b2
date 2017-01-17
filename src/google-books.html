@@ -7,31 +7,41 @@
 <dom-module id="google-books">
   <template>
     <style>
+      paper-button.lookup-error {
+        color: white;
+        background-color: var(--paper-amber-500);
+        margin-bottom: 15px;
+      }
     </style>
-    <template is="dom-if" if="[[searchMode]]">
-      <iron-ajax
+    <iron-ajax
         id="ajaxSearch"
         auto
         url="https://www.googleapis.com/books/v1/volumes"
         params="[[computeParams]]"
         handle-as="json"
-        on-response="handleResponse"
+        on-response="handleSearchResponse"
         debounce-duration="300"></iron-ajax>
-      <div>[[results.length]] results</div>
-      <template is="dom-repeat" items="[[results]]">
-        <google-books-entry entry="{{item}}"></google-books-entry>
-      </template>
-    </template>
-    <template is="dom-if" if="[[!searchMode]]">
-      <iron-ajax
+    <iron-ajax
         id="ajaxLookup"
         auto
         url="https://www.googleapis.com/books/v1/volumes/[[gbooksId]]"
         handle-as="json"
-        on-response="handleResponse"
+        on-response="handleLookupResponse"
+        on-error="handleLookupError"
         debounce-duration="300"></iron-ajax>
+
+    <div hidden$="[[!searchMode]]">
+      <div>[[results.length]] results</div>
+      <template is="dom-repeat" items="[[results]]" hidden$="[[!searchMode]]">
+        <google-books-entry entry="{{item}}"></google-books-entry>
+      </template>
+    </div>
+    <div hidden$="[[searchMode]]">
       <google-books-entry id="lookupEntry" entry="{{lookupResult}}" selected></google-books-entry>
-    </template>
+    </div>
+    <div hidden$="[[!showDeselect]]">
+      <paper-button on-tap="deselect" class="lookup-error" hidden$="[[!showDeselect]]">Search Again</paper-button>
+    </div>
   </template>
 </dom-module>
 
