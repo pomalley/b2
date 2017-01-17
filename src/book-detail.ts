@@ -45,7 +45,7 @@ class Book extends Autofieldable {
       return value ? "Date read: " + value : "[no read date]";
     },
     groups: ["personal"],
-    label: "Date Read",
+    label: "Date Read (YYYY-MM)",
     path: "book.date_read",
     validator: monthDateValidator,
   })
