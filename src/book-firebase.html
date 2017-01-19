@@ -12,6 +12,11 @@ Handles the logic of firebase connections for the b2 app.
 
 <dom-module id="book-firebase">
   <template>
+    <style>
+      paper-button {
+        background-color: var(--app-primary-alternate);
+      }
+    </style>
     <firebase-app
         name="[[appName]]"
         auth-domain="polymer-test-149602.firebaseapp.com"
@@ -31,8 +36,8 @@ Handles the logic of firebase connections for the b2 app.
       <paper-button on-tap="signIn" raised>Sign In</paper-button>
     </div>
     <div hidden$="[[!signedIn]]">
-      Hello, [[user.displayName]]
-      <paper-button on-tap="signOut" raised>Sign Out</paper-button>
+      <div>Hello, [[user.displayName]]</div>
+      <div><paper-button on-tap="signOut" raised>Sign Out</paper-button></div>
     </div>
 
   </template>

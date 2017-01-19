@@ -4,7 +4,12 @@ my-new-view element
 a page to display a list (of books) resulting from a query
 -->
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="book-detail.html">
 
@@ -16,31 +21,65 @@ a page to display a list (of books) resulting from a query
         display: block;
         padding: 16px;
       }
+
+      .book-link {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .book-item {
+        background-color: var(--app-primary-light);
+      }
+      .book-link:nth-of-type(even) .book-item {
+        background-color: var(--app-primary-alternate);
+      }
+
+      paper-listbox {
+        padding: 0;
+      }
     </style>
 
     <firebase-query
-      id="query"
-      app-name="b2"
-      path="[[queryPath]]"
-      data="{{queryData}}"
-      >
+        id="query"
+        app-name="b2"
+        path="[[queryPath]]"
+        data="{{queryData}}"
+    >
     </firebase-query>
 
-    <h1>Book List</h1>
-    <template is="dom-repeat" items="{{queryData}}">
-      <div><a href$="/book/[[item.$key]]">[[item.title]] by [[item.authors]]</a></div>
-    </template>
+    <h1>All Books ({{queryData.length}} total)</h1>
+    <paper-listbox>
+      <template is="dom-repeat" items="{{queryData}}">
+        <a class="book-link" href$="/book/[[item.$key]]">
+          <paper-icon-item class="book-item">
+            <iron-icon icon="[[getIcon(item)]]" item-icon></iron-icon>
+            <paper-item-body two-line>
+              <div>[[item.title]]</div>
+              <div secondary>[[item.authors]]</div>
+            </paper-item-body>
+          </paper-icon-item>
+        </a>
+      </template>
+    </paper-listbox>
     <div>Path: [[queryPath]]</div>
-    
+
   </template>
 
   <script>
     Polymer({
       is: 'view-all-books',
-
       properties: {
         queryPath: String,
         queryData: Object
+      },
+      getIcon: function (book) {
+        if (book.want_to_read) {
+          return "icons:book";
+        } else if (book.read) {
+          return "icons:done";
+        } else {
+          return "maps:local-library";
+        }
       }
     });
   </script>
