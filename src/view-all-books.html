@@ -2,6 +2,11 @@
 my-new-view element
 
 a page to display a list (of books) resulting from a query
+
+Mode can be:
+  "library": show the "library list" -- books we want to read
+  "bookstore": show the "bookstore list" -- books we want to own
+  anything else: show all books
 -->
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
@@ -11,6 +16,7 @@ a page to display a list (of books) resulting from a query
 <link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="book-detail.html">
 
 <dom-module id="view-all-books">
@@ -39,6 +45,11 @@ a page to display a list (of books) resulting from a query
       }
     </style>
 
+    <app-route
+        route="{{route}}"
+        pattern="/:mode"
+        data="{{routeData}}"></app-route>
+
     <firebase-query
         id="query"
         app-name="b2"
@@ -47,9 +58,9 @@ a page to display a list (of books) resulting from a query
     >
     </firebase-query>
 
-    <h1>All Books ({{queryData.length}} total)</h1>
+    <h1>[[header]]</h1>
     <paper-listbox>
-      <template is="dom-repeat" items="{{queryData}}">
+      <template id="repeater" is="dom-repeat" items="{{queryData}}" rendered-item-count="{{numBooks}}" filter="filter">
         <a class="book-link" href$="/book/[[item.$key]]">
           <paper-icon-item class="book-item">
             <iron-icon icon="[[getIcon(item)]]" item-icon></iron-icon>
@@ -70,15 +81,59 @@ a page to display a list (of books) resulting from a query
       is: 'view-all-books',
       properties: {
         queryPath: String,
-        queryData: Object
+        queryData: Object,
+        numBooks: {
+          type: Number,
+          value: "-",
+          notify: true
+        },
+        route: Object,
+        routeData: {
+          type: Object,
+          observer: 'routeDataChanged'
+        },
+        mode: {
+          type: String,
+          value: "all",
+          observer: 'modeChanged'
+        },
+        header: {
+          type: String,
+          computed: 'computeHeader(mode, numBooks)'
+        }
+      },
+      routeDataChanged: function(newRouteData) {
+        this.mode = newRouteData.mode || "all";
+      },
+      modeChanged: function() {
+        this.$.repeater.render();
       },
       getIcon: function (book) {
+        viewAll = this;
         if (book.want_to_read) {
           return "icons:book";
         } else if (book.read) {
           return "icons:done";
         } else {
           return "maps:local-library";
+        }
+      },
+      filter: function (book) {
+        if (this.mode.toLowerCase() === "library") {
+          return !!book.want_to_read;
+        } else if (this.mode.toLowerCase() === "bookstore") {
+          return !!book.want_to_own;
+        } else {
+          return true;
+        }
+      },
+      computeHeader: function (mode, numBooks) {
+        if (mode.toLowerCase() === "library") {
+          return "Library list (" + numBooks + " total)";
+        } else if (mode.toLowerCase() === "bookstore") {
+          return "Bookstore list (" + numBooks + " total)";
+        } else {
+          return "All books (" + numBooks + " total)";
         }
       }
     });

@@ -84,9 +84,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             user="{{user}}">
         </book-firebase>
         </div>
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+        <iron-selector selected="[[selectedPage]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="book" href="/book/new">New Book</a>
-          <a name="all-books" href="/all-books">All Books</a>
+          <a name="all-books" href="/all-books/all">All Books</a>
+          <a name="library" href="/all-books/library">Library List</a>
+          <a name="bookstore" href="/all-books/bookstore">Bookstore List</a>
           <a name="import" href="/import">Import Books</a>
         </iron-selector>
       </app-drawer>
@@ -107,7 +109,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             fallback-selection="view-404"
             role="main">
           <view-book name="book" db-path="/users/[[user.uid]]" route="{{subroute}}"></view-book>
-          <view-all-books name="all-books" query-path="/users/[[user.uid]]"></view-all-books>
+          <view-all-books name="all-books" query-path="/users/[[user.uid]]" route="{{subroute}}"></view-all-books>
           <view-import name="import" db-path="/users/[[user.uid]]"></view-import>
           <view-404 name="404"></view-404>
           <view-login name="login"></view-login>
@@ -125,6 +127,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           reflectToAttribute: true,
           observer: '_pageChanged'
         },
+        selectedPage: {
+          type: String,
+          computed: '_selectedPage(page, subroute)'
+        },
         routeData: Object,
         subroute: Object,
         user: {
@@ -133,7 +139,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       observers: [
-        '_routePageChanged(routeData.page)',
+        '_routePageChanged(routeData.page)'
       ],
       _userChanged: function(user) {
         this._routePageChanged(this.routeData.page);
@@ -151,6 +157,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _showPage404: function() {
         this.page = '404';
+      },
+      // bit of a hack to make sure that the iron-selector selects the right link to make bold.
+      _selectedPage: function(page, subroute) {
+        if (page === "all-books" && subroute.path === "/library")
+          return "library";
+        if (page === "all-books" && subroute.path === "/bookstore")
+          return "bookstore";
+        return page;
       }
     });
   </script>
