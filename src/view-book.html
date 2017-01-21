@@ -166,6 +166,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         var view1 = this;
         this.data['_saved'] = true;
+//        this.data['date_created'] = + new Date();
         this.$.document.save(this.dbPath)
           .then(
             function(response) {

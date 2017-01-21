@@ -62,6 +62,9 @@ class Autofieldable extends polymer.Base {
     }
   }
 
+  public createdTimestampPath(): string { return undefined; }
+  public updatedTimestampPath(): string { return undefined; }
+
   @property({computed: "_allValid(autofields.*)", notify: true, reflectToAttribute: true})
   public allValid: boolean;
   public _allValid(autofields) {
@@ -93,6 +96,12 @@ class Autofieldable extends polymer.Base {
     function observeArray(newValue) {
       if (this.isReady) {
         this.set(fieldConfig.path, newValue);
+        if (this.updatedTimestampPath()) {
+          this.set(this.updatedTimestampPath(), +new Date());
+        }
+      }
+      if (this.createdTimestampPath() && !this.get(this.createdTimestampPath())) {
+        this.set(this.createdTimestampPath(), +new Date());
       }
     }
     observe("autofields.#" + n + ".value")(this, "__autoObserve" + n);

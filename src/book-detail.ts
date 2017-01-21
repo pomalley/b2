@@ -51,6 +51,9 @@ class Book extends Autofieldable {
   })
   public dateRead: string;
 
+  public createdTimestampPath() { return "book.date_created"; }
+  public updatedTimestampPath() { return "book.date_updated"; }
+
   @listen("gbooks-entry-selected")
   public entrySelected(event, detail) {
     if (detail.selected) {
