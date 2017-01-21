@@ -32,6 +32,13 @@ Handles the logic of firebase connections for the b2 app.
         signed-in="{{signedIn}}">
     </firebase-auth>
 
+    <firebase-document
+      id="validUser"
+      app-name="[[appName]]"
+      data="{{validUser}}"
+      path="_valid_user">
+    </firebase-document>
+
     <div hidden$="[[signedIn]]">
       <paper-button on-tap="signIn" raised>Sign In</paper-button>
     </div>
@@ -56,7 +63,15 @@ Handles the logic of firebase connections for the b2 app.
         signedIn: {
           type: Boolean,
           notify: true
+        },
+        validUser: {
+          type: Boolean,
+          notify: true,
+          value: false
         }
+      },
+      ready: function() {
+        auther = this;
       },
       signIn: function () {
         //noinspection JSUnresolvedFunction

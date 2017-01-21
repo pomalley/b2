@@ -80,8 +80,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="drawer-list">
         <book-firebase
             id="firebase"
-            appName="b2"
-            user="{{user}}">
+            app-name="b2"
+            user="{{user}}"
+            valid-user="{{validUser}}">
         </book-firebase>
         </div>
         <iron-selector selected="[[selectedPage]]" attr-for-selected="name" class="drawer-list" role="navigation">
@@ -113,6 +114,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <view-import name="import" db-path="/users/[[user.uid]]"></view-import>
           <view-404 name="404"></view-404>
           <view-login name="login"></view-login>
+          <view-bad-user name="bad-user"></view-bad-user>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
@@ -136,7 +138,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         user: {
           type: Object,
           observer: '_userChanged'
-        }
+        },
+        validUser: Boolean
       },
       observers: [
         '_routePageChanged(routeData.page)'
@@ -145,8 +148,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._routePageChanged(this.routeData.page);
       },
       _routePageChanged: function(page) {
+        app = this;
         if (!this.user) {
           this.page = 'login';
+        } else if (!this.validUser) {
+          this.page = 'bad-user'
         } else {
           this.page = page || 'all-books';
         }

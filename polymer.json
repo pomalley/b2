@@ -5,7 +5,8 @@
     "src/view-book.html",
     "src/view-all-books.html",
     "src/view-404.html",
-    "src/view-login.html"
+    "src/view-login.html",
+    "src/view-bad-user.html"
   ],
   "sourceGlobs": [
    "src/**/*",
