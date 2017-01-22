@@ -29,7 +29,8 @@ Handles the logic of firebase connections for the b2 app.
         provider="google"
         on-error="handleError"
         app-name="[[appName]]"
-        signed-in="{{signedIn}}">
+        signed-in="{{signedIn}}"
+        status-known="{{ready}}">
     </firebase-auth>
 
     <firebase-document
@@ -66,12 +67,12 @@ Handles the logic of firebase connections for the b2 app.
         },
         validUser: {
           type: Boolean,
-          notify: true,
-          value: false
+          notify: true
+        },
+        ready: {
+          type: Boolean,
+          notify: true
         }
-      },
-      ready: function() {
-        auther = this;
       },
       signIn: function () {
         //noinspection JSUnresolvedFunction

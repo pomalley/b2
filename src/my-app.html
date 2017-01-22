@@ -21,6 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="../bower_components/polymer-ts/polymer-ts.html">
@@ -64,6 +65,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: black;
         font-weight: bold;
       }
+      paper-spinner {
+        padding: 16px;
+      }
     </style>
 
     <app-location route="{{route}}"></app-location>
@@ -82,7 +86,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             id="firebase"
             app-name="b2"
             user="{{user}}"
-            valid-user="{{validUser}}">
+            valid-user="{{validUser}}"
+            ready="{{firebaseReady}}">
         </book-firebase>
         </div>
         <iron-selector selected="[[selectedPage]]" attr-for-selected="name" class="drawer-list" role="navigation">
@@ -103,19 +108,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div main-title>b2</div>
           </app-toolbar>
         </app-header>
-
-        <iron-pages
-            selected="[[page]]"
-            attr-for-selected="name"
-            fallback-selection="view-404"
-            role="main">
-          <view-book name="book" db-path="/users/[[user.uid]]" route="{{subroute}}"></view-book>
-          <view-all-books name="all-books" query-path="/users/[[user.uid]]" route="{{subroute}}"></view-all-books>
-          <view-import name="import" db-path="/users/[[user.uid]]"></view-import>
-          <view-404 name="404"></view-404>
-          <view-login name="login"></view-login>
-          <view-bad-user name="bad-user"></view-bad-user>
-        </iron-pages>
+        <div hidden="[[firebaseReady]]">
+          <paper-spinner active="[[!firebaseReady]]" alt="Connecting to Firebase..."></paper-spinner>
+        </div>
+        <div hidden$="[[!firebaseReady]]">
+          <iron-pages
+              selected="[[page]]"
+              attr-for-selected="name"
+              fallback-selection="view-404"
+              role="main">
+            <view-book name="book" db-path="/users/[[user.uid]]" route="{{subroute}}"></view-book>
+            <view-all-books name="all-books" query-path="/users/[[user.uid]]" route="{{subroute}}"></view-all-books>
+            <view-import name="import" db-path="/users/[[user.uid]]"></view-import>
+            <view-404 name="404"></view-404>
+            <view-login name="login"></view-login>
+            <view-bad-user name="bad-user"></view-bad-user>
+          </iron-pages>
+        </div>
       </app-header-layout>
     </app-drawer-layout>
   </template>
@@ -139,12 +148,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Object,
           observer: '_userChanged'
         },
-        validUser: Boolean
+        validUser: {
+          type: Boolean,
+          observer: '_validUserChanged'
+        },
+        firebaseReady: {
+          type: Boolean
+        }
       },
       observers: [
         '_routePageChanged(routeData.page)'
       ],
       _userChanged: function(user) {
+        this._routePageChanged(this.routeData.page);
+      },
+      _validUserChanged: function(validUser) {
         this._routePageChanged(this.routeData.page);
       },
       _routePageChanged: function(page) {
