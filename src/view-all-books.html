@@ -14,7 +14,9 @@ Mode can be:
 <link rel="import" href="../bower_components/iron-icons/maps-icons.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="book-detail.html">
@@ -43,6 +45,14 @@ Mode can be:
       paper-listbox {
         padding: 0;
       }
+
+      h1 {
+        display: inline-block;
+      }
+
+      #dropdown {
+        float: right;
+      }
     </style>
 
     <app-route
@@ -58,9 +68,19 @@ Mode can be:
     >
     </firebase-query>
 
-    <h1>[[header]]</h1>
+    <div>
+      <h1>[[header]]</h1>
+      <paper-dropdown-menu id="dropdown" label="Sort by..." selected-item-label="{{sortMode}}">
+        <paper-listbox class="dropdown-content" id="sortModeListbox">
+          <template id="sortDisplayItems" is="dom-repeat" items="[[sortDisplayOptions]]">
+            <paper-item>[[item]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </div>
     <paper-listbox>
-      <template id="repeater" is="dom-repeat" items="{{queryData}}" rendered-item-count="{{numBooks}}" filter="filter">
+      <template id="repeater" is="dom-repeat" items="{{queryData}}" rendered-item-count="{{numBooks}}" filter="filter"
+                sort="sort">
         <a class="book-link" href$="/book/[[item.$key]]">
           <paper-icon-item class="book-item">
             <iron-icon icon="[[getIcon(item)]]" item-icon></iron-icon>
@@ -77,6 +97,16 @@ Mode can be:
   </template>
 
   <script>
+    function compareAuthors(a, b) {
+      var lastName = function(name) {
+        name = name.trim();
+        if (name.indexOf(',') !== -1) {
+          return name.split(',')[0].trim();
+        }
+        return name.split(' ')[name.split(' ').length - 1].trim();
+      };
+      return lastName(a[0]).localeCompare(lastName(b[0]));
+    }
     Polymer({
       is: 'view-all-books',
       properties: {
@@ -97,6 +127,21 @@ Mode can be:
           value: "all",
           observer: 'modeChanged'
         },
+        sortMode: {
+          type: String,
+          value: "Author",
+          observer: "sortModeChanged"
+        },
+        sortDisplayOptions: {
+          type: Array,
+          readOnly: true,
+          value: ["Author", "Title", "Year", "Date Created", "Date Updated", "Date Read"]
+        },
+        sortDisplaySelected: {
+          type: String,
+          observer: "sortDisplayChanged",
+          notify: true
+        },
         header: {
           type: String,
           computed: 'computeHeader(mode, numBooks)'
@@ -106,6 +151,12 @@ Mode can be:
         this.mode = newRouteData.mode || "all";
       },
       modeChanged: function() {
+        this.$.repeater.render();
+      },
+      sortModeChanged: function (newSortMode) {
+        if (this.sortDisplayOptions) {
+          this.$.sortModeListbox.select(this.sortDisplayOptions.indexOf(newSortMode));
+        }
         this.$.repeater.render();
       },
       getIcon: function (book) {
@@ -127,6 +178,42 @@ Mode can be:
           return true;
         }
       },
+      sort: function (a, b) {
+        var mapping = {
+          "Date Created": "date_created",
+          "Date Updated": "date_updated",
+          "Year": "year",
+          "Date Read": "date_read",
+          "Title": "title",
+          "Author": "authors"
+        };
+        var sortVar = mapping[this.sortMode];
+        var a_val, b_val;
+        var simpleExtract = function (s) {
+          a_val = a[s];
+          b_val = b[s];
+        };
+        if (["date_created", "date_updated", "year", "date_read", "title", "authors"].indexOf(sortVar) !== -1) {
+          simpleExtract(sortVar);
+        } else {
+          console.error("Cannot sort by ", sortVar, " -- using date_created");
+          simpleExtract("date_created");
+        }
+        if (sortVar === "title") {
+          return a_val.localeCompare(b_val);
+        }
+        if (sortVar === "authors") {
+          return compareAuthors(a_val, b_val);
+        }
+        if (sortVar === "date_read") {
+          a_val = Date.parse(a_val);
+          b_val = Date.parse(b_val);
+        }
+        if (!isFinite(a_val) && !isFinite(b_val)) return 0;
+        if (!isFinite(a_val)) return 1;
+        if (!isFinite(b_val)) return -1;
+        return a_val - b_val;
+      },
       computeHeader: function (mode, numBooks) {
         if (mode.toLowerCase() === "library") {
           return "Library list (" + numBooks + " total)";
@@ -135,6 +222,9 @@ Mode can be:
         } else {
           return "All books (" + numBooks + " total)";
         }
+      },
+      ready: function() {
+        this.sortModeChanged(this.sortMode);
       }
     });
   </script>
