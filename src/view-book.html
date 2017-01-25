@@ -16,9 +16,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-route.html">
 
 <link rel="import" href="book-detail.html">
-
-
 <link rel="import" href="shared-styles.html">
+<link rel="stylesheet" href="../bower_components/pikaday/css/pikaday.css">
+<script src="../bower_components/pikaday/pikaday.js"></script>
+
 
 <dom-module id="view-book">
   <template>
@@ -76,6 +77,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div hidden$="[[isNew]]">path: {{fullPath}}</div>
       </div>
     </div>
+    <div id="container"></div>
+    <input type="text" id="datepicker">
     <!--key = [[key]]<br />-->
     <!--isNew = [[isNew]]<br />-->
     <!--editing = [[editing]]<br/>-->
@@ -198,7 +201,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             console.log("failed to delete " + response);
           }
         );
+      },
+      ready: function() {
+        var picker = new Pikaday({ field: this.$.datepicker, container: this.$.container, bound: false });
+        console.log(picker);
       }
     });
+  </script>
+  <script>
+//    var picker = new Pikaday({ field: document.getElementById('datepicker') });
+//    console.log(picker);
   </script>
 </dom-module>
