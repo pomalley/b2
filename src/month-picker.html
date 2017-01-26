@@ -26,6 +26,7 @@ provides an input and a pop-up for selecting a month and year
       }
       .year {
         font-weight: bold;
+        font-size: larger;
         text-align: center;
       }
       div#divheader {
@@ -35,8 +36,13 @@ provides an input and a pop-up for selecting a month and year
       table#pickerTable {
         margin-top: 0;
       }
+      paper-dialog {
+        position: absolute;
+        margin-left: 0;
+        margin-bottom: 50px;
+      }
     </style>
-    <paper-dialog id="dialog" opened="{{opened}}" no-cancel-on-outside-click no-auto-focus>
+    <paper-dialog id="dialog" opened="{{opened}}" no-cancel-on-outside-click no-auto-focus horizontal-align="left" vertical-align="bottom">
       <div id="divheader">
         <paper-icon-button icon="icons:arrow-back" id="yearBack"></paper-icon-button>
         <span class="year">{{year}}</span>
@@ -52,7 +58,7 @@ provides an input and a pop-up for selecting a month and year
         </template>
       </table>
     </paper-dialog>
-    <paper-input id="pickerInput" value="{{value}}"></paper-input>
+    <paper-input id="pickerInput" value="{{value}}" label="[[label]]"></paper-input>
   </template>
   <script>
     Polymer({
@@ -73,7 +79,7 @@ provides an input and a pop-up for selecting a month and year
         },
         monthValues: {
           type: Array,
-          value: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "12"]
+          value: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
         },
         numRows: {
           type: Number,
@@ -90,7 +96,8 @@ provides an input and a pop-up for selecting a month and year
         month: {
           type: String,
           notify: true
-        }
+        },
+        label: String
       },
       listeners: {
         'pickerInput.focus': 'inputFocus',
@@ -103,7 +110,11 @@ provides an input and a pop-up for selecting a month and year
         'yearMonthChanged(year, month)'
       ],
       inputFocus: function() {
+        this.$.dialog.positionTarget = this.$.pickerInput;
         this.opened = true;
+        this.async(function () {
+          this.$.dialog.notifyResize();
+        });
       },
       inputBlur: function(event, b) {
         if (!this.$.dialog.contains(event.relatedTarget)) {
@@ -132,6 +143,7 @@ provides an input and a pop-up for selecting a month and year
         this.opened = false;
       },
       ready: function () {
+        this.$.dialog.positionTarget = this.$.pickerInput;
         if (!this.year) {
           this.year = new Date().getFullYear();
         }
