@@ -44,6 +44,7 @@ class Book extends Autofieldable {
     displayValue: (value: String) => {
       return value ? "Date read: " + value : "[no read date]";
     },
+    extraType: "monthDate",
     groups: ["personal"],
     label: "Date Read (YYYY-MM)",
     path: "book.date_read",

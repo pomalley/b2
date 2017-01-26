@@ -1,0 +1,141 @@
+<!--
+
+month-picker element
+
+provides an input and a pop-up for selecting a month and year
+
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="month-picker">
+  <template>
+    <style>
+      .month-button {
+        background: var(--paper-green-100);
+        margin: 0;
+        min-width: 3em;
+        min-height: 3em;
+        padding: 2px;
+      }
+      .month-button:hover {
+        background: var(--paper-green-200);
+      }
+      .year {
+        font-weight: bold;
+        text-align: center;
+      }
+      div#divheader {
+        margin-top: 12px;
+        text-align: center;
+      }
+      table#pickerTable {
+        margin-top: 0;
+      }
+    </style>
+    <paper-dialog id="dialog" opened="{{opened}}" no-cancel-on-outside-click no-auto-focus>
+      <div id="divheader">
+        <paper-icon-button icon="icons:arrow-back" id="yearBack"></paper-icon-button>
+        <span class="year">{{year}}</span>
+        <paper-icon-button icon="icons:arrow-forward" id="yearForward"></paper-icon-button>
+      </div>
+      <table id="pickerTable">
+        <template is="dom-repeat" items="[[rowValues]]" as="rowValue">
+          <tr>
+            <template is="dom-repeat" items="[[rowValue]]">
+              <td><paper-button class="month-button" data-value$="[[item]]">[[item]]</paper-button></td>
+            </template>
+          </tr>
+        </template>
+      </table>
+    </paper-dialog>
+    <paper-input id="pickerInput" value="{{value}}"></paper-input>
+  </template>
+  <script>
+    Polymer({
+      is: 'month-picker',
+      properties: {
+        value: {
+          type: String,
+          notify: true
+        },
+        opened: {
+          type: Boolean,
+          notify: true,
+          value: false
+        },
+        monthNames: {
+          type: Array,
+          value: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        },
+        monthValues: {
+          type: Array,
+          value: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "12"]
+        },
+        numRows: {
+          type: Number,
+          value: 3
+        },
+        rowValues: {
+          type: Array,
+          computed: 'computeRows(monthNames, numRows)'
+        },
+        year: {
+          type: Number,
+          notify: true
+        },
+        month: {
+          type: String,
+          notify: true
+        }
+      },
+      listeners: {
+        'pickerInput.focus': 'inputFocus',
+        'pickerInput.blur': 'inputBlur',
+        'yearBack.tap': 'yearBack',
+        'yearForward.tap': 'yearForward',
+        'tap': 'buttonTap'
+      },
+      observers: [
+        'yearMonthChanged(year, month)'
+      ],
+      inputFocus: function() {
+        this.opened = true;
+      },
+      inputBlur: function(event, b) {
+        if (!this.$.dialog.contains(event.relatedTarget)) {
+          this.opened = false;
+        }
+      },
+      yearBack: function() { this.year--; },
+      yearForward: function() { this.year++; },
+      computeRows: function(monthNames, numRows) {
+        var rows = [];
+        var numCols = Math.ceil(monthNames.length / numRows);
+        for (var i = 0; i < numRows; i++) {
+          rows.push(monthNames.slice(i * numCols, (i+1) * numCols));
+        }
+        return rows;
+      },
+      yearMonthChanged: function(year, month) {
+        var newVal = year + "-" + month;
+        this.$.pickerInput.value = newVal;
+      },
+      buttonTap: function(event, source) {
+        var monthName = source.sourceEvent.path[0].innerHTML;
+        var idx = this.monthNames.indexOf(monthName);
+        if (idx === -1) return;
+        this.month = this.monthValues[idx];
+        this.opened = false;
+      },
+      ready: function () {
+        if (!this.year) {
+          this.year = new Date().getFullYear();
+        }
+      }
+    })
+  </script>
+</dom-module>

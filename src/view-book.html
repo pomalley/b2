@@ -17,8 +17,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="book-detail.html">
 <link rel="import" href="shared-styles.html">
-<link rel="stylesheet" href="../bower_components/pikaday/css/pikaday.css">
-<script src="../bower_components/pikaday/pikaday.js"></script>
+
+<link rel="import" href="month-picker.html">
 
 
 <dom-module id="view-book">
@@ -77,11 +77,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div hidden$="[[isNew]]">path: {{fullPath}}</div>
       </div>
     </div>
-    <div id="container"></div>
-    <input type="text" id="datepicker">
-    <!--key = [[key]]<br />-->
-    <!--isNew = [[isNew]]<br />-->
-    <!--editing = [[editing]]<br/>-->
   </template>
 
   <script>
@@ -106,8 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           computed: '_computeIsNew(key)'
         },
         route: {
-          type: String,
-          observer: '_routeChanged'
+          type: String
         },
         data: {
           type: Object,
@@ -137,7 +131,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _keyChanged: function(newKey) {
         view1 = this;
-//        console.log("new key: " + newKey);
         if (newKey == "new") {
           this.set("editing", true);
           this.set("data", {"type": "book"});
@@ -146,16 +139,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       _routeKeyChanged: function(newKey) {
-//        console.log("routeData.key: " + newKey);
         this.key = newKey || "new";
       },
-      _routeChanged: function(newRoute) {
-//        console.log("route changed: %o", newRoute);
-      },
       _computeFullPath: function(path, key) {
-//        console.log("computeFullPath: path='" + path + "' key='" + key + "'");
         if (path && key && key != "new") {
-//          console.log("returning real path");
           return path + '/' + key;
         }
         return undefined;
@@ -169,7 +156,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         var view1 = this;
         this.data['_saved'] = true;
-//        this.data['date_created'] = + new Date();
         this.$.document.save(this.dbPath)
           .then(
             function(response) {
@@ -201,15 +187,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             console.log("failed to delete " + response);
           }
         );
-      },
-      ready: function() {
-        var picker = new Pikaday({ field: this.$.datepicker, container: this.$.container, bound: false });
-        console.log(picker);
       }
     });
-  </script>
-  <script>
-//    var picker = new Pikaday({ field: document.getElementById('datepicker') });
-//    console.log(picker);
   </script>
 </dom-module>

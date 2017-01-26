@@ -31,8 +31,9 @@
     <template is="dom-if" if="[[isBoolean]]">
       <div><paper-checkbox checked="{{item.value}}" disabled$="[[!editing]]">[[item.label]]</paper-checkbox></div>
     </template>
-    <template is="dom-if" if="[[isDate]]">
+    <template is="dom-if" if="[[isMonthDate]]">
       <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
+      <div hidden$="[[!editing]]"><month-picker id="picker" value="{{item.value}}"></month-picker></div>
     </template>
     <template is="dom-if" if="[[isArray]]">
       <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>

@@ -11,6 +11,7 @@ interface Autofield {
   displayValue: string;
   type: any;
   validator: (value: any) => boolean;
+  extraType: string;
 }
 
 interface AutofieldConfig<T> {
@@ -20,6 +21,7 @@ interface AutofieldConfig<T> {
   displayValue: (value: T) => string;
   groups: string[];
   validator: (value: T) => boolean;
+  extraType: string;
 }
 
 // make a function that replaces an empty string with the given string. for use as a displayValue.
@@ -54,6 +56,7 @@ class Autofieldable extends polymer.Base {
     this.autofields = [];
     for (let autoconfig of this.autoconfigs) {
       this.push("autofields", {
+        extraType: autoconfig.extraType,
         label: autoconfig.label,
         type: this["properties"][autoconfig.propName].type,
         validator: autoconfig.validator,
@@ -109,7 +112,7 @@ class Autofieldable extends polymer.Base {
 }
 
 function autofield<T>(conf: {path: string, label?: string, displayValue?: (value: T) => string, groups?: string[],
-                             validator?: (value: T) => boolean}) {
+                             validator?: (value: T) => boolean, extraType?: string}) {
   return (target: Autofieldable, name: string) => {
     let t = Reflect.getMetadata("design:type", target, name);
 
@@ -117,6 +120,7 @@ function autofield<T>(conf: {path: string, label?: string, displayValue?: (value
       displayValue: conf.displayValue || ((value: T) => {
         return value !== undefined ? value.toString() : "";
       }),
+      extraType: conf.extraType || "",
       groups: conf.groups || [],
       label: conf.label || name,
       path: conf.path,

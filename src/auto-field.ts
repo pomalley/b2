@@ -23,15 +23,14 @@ class Field extends polymer.Base {
     return item.type === Boolean;
   }
 
-  //noinspection JSMethodCanBeStatic
   @computed({type: Boolean})
   public isString(item) {
-    return item.type === String;
+    return item.type === String && !item.extraType;
   }
 
   @computed({type: Boolean})
-  public isDate(item) {
-    return item.type === Date;
+  public isMonthDate(item) {
+    return item.extraType === "monthDate";
   }
 
   @computed({type: Boolean})
