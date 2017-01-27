@@ -5,10 +5,6 @@
 <link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../bower_components/iron-validatable-behavior/iron-validatable-behavior.html">
 
-<script src="../bower_components/polymer-ts/polymer-ts.js"></script>
-<script src="../node_modules/reflect-metadata/Reflect.js"></script>
-<script src="autofieldable.js"></script>
-
 <dom-module id="auto-field">
   <template>
     <style>
@@ -16,28 +12,28 @@
         color: red;
       }
     </style>
-    <template is="dom-if" if="[[isString]]">
+    <template is="dom-if" if="[[isString(item)]]">
       <paper-input hidden$="[[!editing]]" value="{{item.value}}" label$="[[item.label]]"
                    invalid="{{invalid}}"></paper-input>
       <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
     </template>
-    <template is="dom-if" if="[[isNumber]]">
+    <template is="dom-if" if="[[isNumber(item)]]">
       <paper-input-container hidden$="[[!editing]]" invalid="{{invalid}}">
         <label>[[item.label]]</label>
         <input is="iron-input" bind-value="{{item.value}}" title="[[item.label]]">
       </paper-input-container>
       <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
     </template>
-    <template is="dom-if" if="[[isBoolean]]">
+    <template is="dom-if" if="[[isBoolean(item)]]">
       <div><paper-checkbox checked="{{item.value}}" disabled$="[[!editing]]">[[item.label]]</paper-checkbox></div>
     </template>
-    <template is="dom-if" if="[[isMonthDate]]">
+    <template is="dom-if" if="[[isMonthDate(item)]]">
       <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
       <div hidden$="[[!editing]]">
         <month-picker id="picker" value="{{item.value}}" label="[[item.label]]"></month-picker>
       </div>
     </template>
-    <template is="dom-if" if="[[isArray]]">
+    <template is="dom-if" if="[[isArray(item)]]">
       <div hidden$="[[editing]]">[[item.displayValue]]<paper-tooltip>[[item.label]]</paper-tooltip></div>
       <template is="dom-repeat" items="{{item.value}}" as="subitem">
         <paper-input value="{{subitem}}" label$="[[item.label]]" hidden$="[[!editing]]"></paper-input>
@@ -50,4 +46,74 @@
   </template>
 </dom-module>
 
-<script type="text/javascript" src="auto-field.js"></script>
+<script>
+  Polymer({
+    is: "auto-field",
+    behaviors: [Polymer.IronValidatableBehavior],
+    properties: {
+      editing: Boolean,
+      invalid: {
+        type: Boolean,
+        notify: true
+      },
+      item: {
+        type: Object,
+        notify: true
+      }
+    },
+    listeners: {
+      'input': 'onChange'
+    },
+    _getValidity: function () {
+      return this.item.validator(this.item.value);
+    },
+    onChange: function () {
+      //noinspection TsLint - validate() gets added by @behavior, typescript doesn't seem to pick it up
+      this["validate"]();
+      // handle arrays
+      const subitem = this.$$("#newSubitem");
+      if (subitem && subitem.value) {
+        this.set("item.value", this.item.value || []);
+        this.push("item.value", subitem.value);
+        subitem.value = "";
+        this.async(function () {
+          this.$$("paper-input:nth-of-type(" + (this.item.value.length) + ")").focus();
+        }, 1.0);
+      }
+      if (this.isArray) {
+        const value = this.item.value;
+        for (var i = value.length - 1; i >= 0; i--) {
+          if (!value[i]) {
+            value.splice(i, 1);
+          }
+        }
+        // override the dirty checking (see polymer docs)
+        this.set("item.value", []);
+        this.set("item.value", value);
+      }
+    },
+    isBoolean: function (item) {
+      return item.type === Boolean;
+    },
+    isString: function (item) {
+      return item.type === String && !item.extraType;
+    },
+    isMonthDate: function (item) {
+      return item.extraType === "monthDate";
+    },
+    isNumber: function (item) {
+      return item.type === Number;
+    },
+    isArray: function (item) {
+      return item.type === Array;
+    },
+    unknownType: function (item) {
+      return !this.isBoolean(item)
+        && !this.isString(item)
+        && !this.isDate(item)
+        && !this.isNumber(item)
+        && !this.isArray(item)
+        && !this.isMonthDate(item);
+    }
+  })
+</script>
