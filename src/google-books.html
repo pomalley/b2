@@ -1,8 +1,20 @@
+<!--
+Widget for looking up and displaying data from google books.
+
+If gbooksId _not_ is provided:
+  Queries based on the title and authors of the book parameter.
+  Fires gbooks-entry-selected event when an entry is selected, with event.detail being:
+    selected: boolean, whether the user selected (true) or deselected (false) this entry
+    entry: the entry object, with volumeInfo containing the useful stuff.
+If it is:
+  Looks up google books entry of that id.
+  Fires gbooks-entry-deselected event if the user chooses to de-select that entry.
+-->
+
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="google-books-entry.html">
-<script src="../bower_components/polymer-ts/polymer-ts.js"></script>
 
 <dom-module id="google-books">
   <template>
@@ -15,21 +27,19 @@
     </style>
     <iron-ajax
         id="ajaxSearch"
-        auto
         url="https://www.googleapis.com/books/v1/volumes"
-        params="[[computeParams]]"
+        params="[[params]]"
         handle-as="json"
         on-response="handleSearchResponse"
         on-error="handleSearchError"
-        debounce-duration="300"></iron-ajax>
+        debounce-duration="10000"></iron-ajax>
     <iron-ajax
         id="ajaxLookup"
-        auto
         url="https://www.googleapis.com/books/v1/volumes/[[gbooksId]]"
         handle-as="json"
         on-response="handleLookupResponse"
         on-error="handleLookupError"
-        debounce-duration="300"></iron-ajax>
+        debounce-duration="10000"></iron-ajax>
 
     <div hidden$="[[!searchMode]]">
       <div>[[results.length]] results</div>
@@ -46,4 +56,100 @@
   </template>
 </dom-module>
 
-<script type="text/javascript" src="google-books.js"></script>
+<script>
+  Polymer({
+    is: 'google-books',
+    properties: {
+      'book': Object,
+      'results': {
+        type: Array,
+        notify: true
+      },
+      'gbooksId': {
+        type: String,
+        observer: '_gbooksIdChanged'
+      },
+      'lookupError': {
+        type: Boolean,
+        notify: true
+      },
+      'searchMode': {
+        type: Boolean,
+        computed: '_searchMode(gbooksId)'
+      },
+      'params': {
+        type: String,
+        computed: '_params(book)'
+      },
+      'showDeselect': {
+        type: Boolean,
+        computed: '_showDeselect(lookupError, searchMode)'
+      }
+    },
+    attached: function() {
+      if (!this.gbooksId) {
+        this.gbooksId = "";
+      }
+    },
+    handleSearchResponse: function(event) {
+      if (event.detail.response && event.detail.response.totalItems) {
+        this.results = event.detail.response.items;
+      }
+    },
+    handleLookupResponse: function(event) {
+      if (event.detail.response && event.detail.response.volumeInfo) {
+        this.lookupResult = event.detail.response;
+        this.lookupError = false;
+      } else {
+        this.lookupError = true;
+      }
+    },
+    handleLookupError: function(event) {
+      console.log("lookup error: ", event);
+      this.lookupError = true;
+    },
+    handleSearchError: function(event) {
+    console.log("search error: ", event);
+    },
+    _searchMode: function(gbooksId) {
+      return !gbooksId;
+    },
+    _params: function(book) {
+      var qString = "";
+      var params = {};
+      if (book.title) {
+        qString += "+intitle:" + book.title;
+      }
+      if (book.authors) {
+        book.authors.forEach(function(author) { qString += "+inauthor:" + author; });
+      }
+      if (qString) {
+        params['q'] = qString;
+      }
+      this.$.ajaxSearch.params = params;
+      if (params) {
+        this.async(function() {
+          this.debounce('ajaxSearchDebounce', function() {
+            this.$.ajaxSearch.generateRequest();
+          }, 300);
+        });
+      }
+      return params;
+    },
+    _gbooksIdChanged: function(newId) {
+      if (newId) {
+        this.async(function() {
+          this.debounce('ajaxLookupDebounce', function() {
+            this.$.ajaxLookup.generateRequest();
+          }, 300);
+        });
+      }
+    },
+    _showDeselect: function(lookupError, searchMode) {
+      return lookupError && !searchMode;
+    },
+    deselect: function() {
+      this.fire("gbooks-entry-deselected", {deselected: true});
+    }
+  })
+</script>
