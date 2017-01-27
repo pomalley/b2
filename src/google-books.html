@@ -15,7 +15,7 @@
     </style>
     <iron-ajax
         id="ajaxSearch"
-
+        auto
         url="https://www.googleapis.com/books/v1/volumes"
         params="[[computeParams]]"
         handle-as="json"
@@ -24,7 +24,7 @@
         debounce-duration="300"></iron-ajax>
     <iron-ajax
         id="ajaxLookup"
-
+        auto
         url="https://www.googleapis.com/books/v1/volumes/[[gbooksId]]"
         handle-as="json"
         on-response="handleLookupResponse"
