@@ -40,7 +40,7 @@
       </template>
       <paper-input id="newSubitem" hidden$="[[!editing]]" label$="[[item.label]]"></paper-input>
     </template>
-    <template is="dom-if" if="[[unknownType]]">
+    <template is="dom-if" if="[[unknownType(item)]]">
       <div style="color:darkorange">UNKNOWN TYPE: [[item.displayValue]]</div>
     </template>
   </template>
