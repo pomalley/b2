@@ -45,8 +45,8 @@ class Field extends polymer.Base {
 
   //noinspection JSMethodCanBeStatic
   @computed({type: Boolean})
-  public unknownType(isBoolean, isString, isDate, isNumber, isArray) {
-    return !isBoolean && !isString && !isDate && !isNumber && !isArray;
+  public unknownType(isBoolean, isString, isDate, isNumber, isArray, isMonthDate) {
+    return !isBoolean && !isString && !isDate && !isNumber && !isArray && !isMonthDate;
   }
 
   // overrides fn in IronValidatableBehavior

@@ -2,11 +2,12 @@
   "entrypoint": "index.html",
   "shell": "src/my-app.html",
   "fragments": [
-    "src/view-book.html",
-    "src/view-all-books.html",
     "src/view-404.html",
-    "src/view-login.html",
-    "src/view-bad-user.html"
+    "src/view-all-books.html",
+    "src/view-bad-user.html",
+    "src/view-book.html",
+    "src/view-import.html",
+    "src/view-login.html"
   ],
   "sourceGlobs": [
    "src/**/*",

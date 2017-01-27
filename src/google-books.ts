@@ -71,7 +71,12 @@ class GoogleBooks extends polymer.Base {
   }
 
   private handleLookupError(event) {
+    console.log("lookup error: ", event);
     this.lookupError = true;
+  }
+
+  private handleSearchError(event) {
+    console.log("search error: ", event);
   }
 
   @computed()
